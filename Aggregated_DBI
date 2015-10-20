@@ -1079,7 +1079,8 @@ function onPromptCheck (name, line, wildcards, styles)
 		end
 	end
 	
-	if training_pl_gained > 0 then
+	--this is prevented from firing at the very end of the training cycle, because training_stat is wiped
+	if training_pl_gained > 0 and training_stat ~= "" then
 		ColourTell("green", "black", "Training (",
 					"cyan", "black", training_stat,
 					"green", "black", ") at ",
@@ -1649,7 +1650,19 @@ function onStartTraining (name, line, wildcards, styles)
 	total_training_pl_gained = 0
 end
 
-function onStopTraining (name, line, wildcards, styles)
+function onStopTraining (name, line, wildcards, styles)	
+	if training_pl_gained > 0 and training_stat ~= "" then
+		ColourTell("green", "black", "Training (",
+					"cyan", "black", training_stat,
+					"green", "black", ") at ",
+					"cyan", "black", shortenNumber(times_gravity),
+					"green", "black", " Gs - PL + ",
+					"red", "black", shortenNumber(training_pl_gained),
+					"green", "black", "\n\n")
+		total_training_pl_gained = total_training_pl_gained + training_pl_gained
+		training_pl_gained = 0
+	end
+	
 	training_stat = ""
 	ColourTell("green", "black", "Total PL gained from training: ",
 				"red", "black", shortenNumber(total_training_pl_gained),
