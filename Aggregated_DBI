@@ -1090,7 +1090,7 @@ function onPromptCheck (name, line, wildcards, styles)
 					"red", "black", shortenNumber(training_pl_gained),
 					"green", "black", "(",
 					"cyan", "black", shortenNumber(total_training_pl_gained),
-					"green, "black", ")",
+					"green", "black", ")",
 					"green", "black", "\n\n")
 		training_pl_gained = 0
 	end
