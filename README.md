@@ -1,15 +1,16 @@
 # dbiScripts
 ###A collection of MUSHClient [only, sorry] scripts I've developed for DBInfinity [a dragonball Z mud] for quality of life/usability.
 
-###Before the install guide, here's a forward about the Aggregation script (the meat and potatoes of this repo):
-######This isn't a bot. If you are expecting it to play the game for you, piss right off. None of these scripts send anything to the server, with the exception of the "setPrompt" and "setBattlePrompt" aliases, both of which are legal aliases. In the words of Rendo: don't be a dildo; Admins will catch you botting. If you modify my script for the purposes of botting [which is against MUD rules], not only are you being an asshole, but you're making me look bad. I urge you not to do either.
+###Foreword: Botting is illegal!!
+######Anything which sends commands to the DBI server without your direct intervention is against the rules.
+###That being said:
+######This isn't a bot. If you are expecting it to play the game for you, you will be sad. The aggregator script doesn't send anything to the server, with the exception of the "setPrompt" and "setBattlePrompt" aliases, both of which are legal aliases.
+###In the words of Rendo: don't be a dildo.
+######Admins will catch you botting. If you modify my script for the purposes of botting [which is against MUD rules], not only are you breaking the rules, but you're making a legitimately helpful script look bad. I urge you not to do either.
+###DO NOT UNDER ANY CIRCUMSTANCES MODIFY MY AGGREGATOR SCRIPT AS A BOT/AUTOMATION SCRIPT. 
+######I will hate you, the admins will hate you, and basically everyone will hate you. Also you'll get banned. DON'T DO IT.
 
-###Botting is illegal!
-
-######Anything which sends commands to the DBI server without your direct intervention is illegal! With that disclaimer, the aggregation script is 100% legal, as it does not send anything to the server.. Everything housed within is purely client-side. That being said, the minimal effort with which a malicious, stupid person could change this script to be illegal is notwithstanding. Th
-
-##DO NOT UNDER ANY CIRCUMSTANCES MODIFY MY AGGREGATOR SCRIPT AS A BOT/AUTOMATION SCRIPT. I will hate you, the admins will hate you, and basically everyone will hate you. Also you'll get banned. DON'T DO IT.
-
+##Installation
 #####To use any of these scripts, go to Program Files (x86)/MUSHClient/worlds/plugins and drop them in. From there, follow each set of instructions.
 
 Here's how to install each of them, in guide form:
