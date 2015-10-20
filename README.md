@@ -31,7 +31,13 @@ Install: before this will work, you need to modify LINE # 28 of this script.
   * Afterwards, click on your "DBI Chats" world to make it active, then go to File -> Plugins -> Add -> Chat_Input_Sender.xml
   * That's all! You should now be able to type in your chat world and still have it send to the real DBI world.
 
-####3. [The good stuff] Aggregated_DBI
+####3. [Not really optional] Add_NewLine_To_Prompt
+  * Forces the idle prompt (H:* K:* P:*) to add a newline to itself when received, allowing the aggregators various triggers to fire as intended. Without it, triggers won't fire until a newline occurs, after each idle prompt, which is annoying.
+Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Add_NewLine_To_Prompt.xml
+  * That's all.
+  * Without this, the aggregator will still work, it just won't work as well. You want this in your list.
+
+####4. [The good stuff] Aggregated_DBI
   * Scrapes all kinds of data to give you meaningful statistics, reduced spam and colorful output.
 Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Aggregated_DBI.xml
   * Before this will work [mostly], you need to use my prompt and battle prompt. 
