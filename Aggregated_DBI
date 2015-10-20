@@ -554,6 +554,39 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="98"
 	>	
 	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^You turn the dial to (?P<timesGravity>.*) times gravity and begin training your (?P<trainingStat>.*)\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onStartTraining"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^You take a break and stop training your (?P<trainingStat>.*)\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onStopTraining"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^You stop training your (?P<trainingStat>.*)\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onStopTraining"
+		sequence="100"
+	>	
+	</trigger>	
 </triggers>
 
 <aliases>
@@ -663,6 +696,8 @@ local current_armor = 0
 local max_armor = 0
 
 local combat_round_pl_gained = 0
+local training_pl_gained = 0
+local total_training_pl_gained = 0
 
 local combat_pl = 0
 local attacks = 0
@@ -703,6 +738,9 @@ local hits_received_since_last_round = 0
 
 local foe_name = ""
 
+local times_gravity = 0
+local training_stat = ""
+
 function resetMedFocValues()
 	original_max_ki = 0.0
 	current_ki = 0.0
@@ -724,6 +762,7 @@ function resetMedFocValues()
 	in_focus = false
 	in_meditate = false
 	combat_round_pl_gained = 0
+	training_pl_gained = 0
 	is_low_on_focus = false
 	ki_gain_string1 = ""
 	ki_gain_string2 = ""
@@ -747,6 +786,10 @@ function resetPromptValues()
 	zeni = 0
 	current_armor = 0
 	max_armor = 0
+	
+	times_gravity = 0
+	training_stat = ""
+	total_training_pl_gained = 0
 end
 
 
@@ -990,6 +1033,8 @@ function onGainedPL (name, line, wildcards, styles)
 		pl_gain_string2 = ""
 		pl_gain_string3 = ""
 		pl_gain_string4 = ""
+	elseif training_stat ~= "" then
+		training_pl_gained = training_pl_gained + pl_gained
 	elseif pl_gained > 0 then
 		combat_round_pl_gained = combat_round_pl_gained + pl_gained		
 	end
@@ -1032,6 +1077,18 @@ function onPromptCheck (name, line, wildcards, styles)
 				printMeditate()
 			end
 		end
+	end
+	
+	if training_pl_gained > 0 then
+		ColourTell("green", "black", "Training (",
+					"cyan", "black", training_stat,
+					"green", "black", ") at ",
+					"cyan", "black", shortenNumber(times_gravity),
+					"green", "black", " Gs - PL + ",
+					"red", "black", shortenNumber(training_pl_gained),
+					"green", "black", "\n\n")
+		total_training_pl_gained = total_training_pl_gained + training_pl_gained
+		training_pl_gained = 0
 	end
 	
 	if current_ki == 0 and in_focus then
@@ -1199,6 +1256,17 @@ function onPromptScrape2 (name, line, wildcards, styles)
 				"cyan", "black", shortenNumber(combat_round_pl_gained),
 				"green", "black", "\n\n")
 		combat_round_pl_gained = 0
+	end
+	if training_pl_gained > 0 then
+		ColourTell("green", "black", "Training (",
+					"cyan", "black", training_stat,
+					"green", "black", ") at ",
+					"cyan", "black", shortenNumber(times_gravity),
+					"green", "black", " Gs - PL + ",
+					"red", "black", shortenNumber(training_pl_gained),
+					"green", "black", "\n\n")
+		total_training_pl_gained = total_training_pl_gained + training_pl_gained
+		training_pl_gained = 0
 	end
 	
 	ColourTell("white", "black", "H[",
@@ -1573,6 +1641,20 @@ function setBattlePrompt (name, line, wildcards)
 	Send(str)
 end
 
+function onStartTraining (name, line, wildcards, styles)
+	if wildcards.trainingStat then
+		training_stat = wildcards.trainingStat
+		times_gravity = tonumber(wildcards.timesGravity)
+	end
+	total_training_pl_gained = 0
+end
+
+function onStopTraining (name, line, wildcards, styles)
+	training_stat = ""
+	ColourTell("green", "black", "Total PL gained from training: ",
+				"red", "black", shortenNumber(total_training_pl_gained),
+				"green", "black", "\n\n")
+end
 ]]>
 </script>
 </muclient>
