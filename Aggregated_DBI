@@ -474,11 +474,12 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^You hit (?P<foename>.+) but (he|she|it) seems to shrug off the damage\.  \[0\]$"
+		match="^You hit (?P<foename>.+?) but (he|she|it+?) seems to shrug off the damage\.  \[0\]$"
 		omit_from_output="y"
+		keep_evaluating="n"
 		regexp="y"
 		script="onEnemySoak"
-		sequence="100"
+		sequence="99"
 	>	
 	</trigger> 	
 
@@ -494,11 +495,12 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You hit (?P<foename>.*)\.\s(.*)\sjust laughs at your weak power\. \[0\]$"
+		match="^You hit (?P<foename>.+?)\.\s(.+?)\sjust laughs at your weak power\. \[0\]$"
 		omit_from_output="y"
+		keep_evaluating="n"
 		regexp="y"
 		script="onEnemySoak"
-		sequence="100"
+		sequence="99"
 	>	
 	</trigger> 
 	
@@ -576,6 +578,9 @@ send_to="12"
 script="onConnect"
 sequence="100"
 >
+<send>
+Note("Cleared local variables.")
+</send>
 </alias>
 <alias
 match="^setBattlePrompt$"
