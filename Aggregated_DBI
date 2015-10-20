@@ -1081,14 +1081,17 @@ function onPromptCheck (name, line, wildcards, styles)
 	
 	--this is prevented from firing at the very end of the training cycle, because training_stat is wiped
 	if training_pl_gained > 0 and training_stat ~= "" then
+		total_training_pl_gained = total_training_pl_gained + training_pl_gained
 		ColourTell("green", "black", "Training (",
 					"cyan", "black", training_stat,
 					"green", "black", ") at ",
 					"cyan", "black", shortenNumber(times_gravity),
 					"green", "black", " Gs - PL + ",
 					"red", "black", shortenNumber(training_pl_gained),
+					"green", "black", "(",
+					"cyan", "black", shortenNumber(total_training_pl_gained),
+					"green, "black", ")",
 					"green", "black", "\n\n")
-		total_training_pl_gained = total_training_pl_gained + training_pl_gained
 		training_pl_gained = 0
 	end
 	
