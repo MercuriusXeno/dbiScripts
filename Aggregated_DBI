@@ -1411,7 +1411,7 @@ function onEndCombat(name, line, wildcards, styles)
 			"cyan", "black", tostring(misses + enemy_soaks),
 			"cyan", "black", "(" .. tostring(round((misses + enemy_soaks) * 100.0 / attacks)) .. "%)",
 			"white", "black", " DPH: ",
-			"cyan", "black", tostring(round(damage_dealt + overkill_counter / hits)),
+			"cyan", "black", tostring(round((damage_dealt + overkill_counter) / hits)),
 			"white", "black", " Overkill: ",
 			"cyan", "black", shortenNumber(overkill_counter),
 			"white", "black", "\n")		
