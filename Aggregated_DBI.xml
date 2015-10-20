@@ -1469,7 +1469,7 @@ function onEndCombat(name, line, wildcards, styles)
 end
 
 function nilZero(obj)
-	if obj == nil then
+	if obj ~= nil then
 		return obj
 	else
 		return 0
