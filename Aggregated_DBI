@@ -474,7 +474,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^You hit (?P<foename>.*) but (he|she|it) sseems to shrug off the damage\.  \[0\]$"
+		match="^You hit (?P<foename>.+) but (he|she|it) seems to shrug off the damage\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemySoak"
