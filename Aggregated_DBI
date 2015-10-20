@@ -524,7 +524,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolt|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|DISEMBOWELS|_cleaves_|GUTS|hacks|thrashes|mauls|jars|hits|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|DISEMBOWELS|_cleaves_|GUTS|hacks|thrashes|mauls|jars|hits|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onTakeDamage"
@@ -756,10 +756,6 @@ function onConnect(name, line, wildcards, styles)
 	resetCombatValues()
 
 	absolute_start_time = GetInfo(232)
-end
-
-function onEndCombat(name, line, wildcards, styles)
-	foe_health = 0
 end
 
 function onStartMeditate(name, line, wildcards, styles)	
@@ -1324,6 +1320,7 @@ function resetCombatValues()
 end
 
 function onEndCombat(name, line, wildcards, styles)	
+	foe_health = 0
 
 	require "wait"
 	wait.make (function ()
