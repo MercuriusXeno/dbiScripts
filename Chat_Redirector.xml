@@ -156,6 +156,16 @@ Change the variable "chat_world" to be the name of the world chats are to go to.
    sequence="100"
   >
   </trigger>
+
+  <trigger
+   enabled="y"
+   match="\[CHAT(:OOC|)\] (?P<playerName>.*)(:|)\s*(-- '|)(?P<chatMessage>.*)('|)"
+   omit_from_output="y"
+   regexp="y"
+   script="redirect"
+   sequence="100"
+  >
+  </trigger>
 </triggers>
 
 <!--  Script  -->
