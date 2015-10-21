@@ -587,6 +587,17 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^You get (?P<itemName>.*) from the corpse of (?P<foeName>.*)$"
+		omit_from_output="n"
+		keep_evaluating="y"
+		regexp="y"
+		script="onLootDrop"
+		sequence="100"
+	>	
+	</trigger>		
 </triggers>
 
 <aliases>
@@ -1311,55 +1322,37 @@ function onGetZeni (name, line, wildcards, styles)
 end
 
 function printFocusKi()
-	ColourTell("red", "black",
-		" _______ _______ _______ __   __ _______   ___   _ ___  \n",
-		"red", "black",
-		"|       |       |       |  | |  |       | |   | | |   | \n",
-		"red", "black",
-		"|    ___|   _   |       |  | |  |  _____| |   |_| |   | \n",
-		"red", "black",
-		"|   |___|  | |  |       |  |_|  | |_____  |      _|   | \n",
-		"red", "black",
-		"|    ___|  |_|  |      _|       |_____  | |     |_|   | \n",
-		"red", "black",
-		"|   |   |       |     |_|       |_____| | |    _  |   | \n",
-		"red", "black",
-		"|___|   |_______|_______|_______|_______| |___| |_|___| \n\n")
+	ColourTell(
+		"red", "black",		" _______ _______ _______ __   __ _______   ___   _ ___  \n",
+		"red", "black",		"|       |       |       |  | |  |       | |   | | |   | \n",
+		"red", "black",		"|    ___|   _   |       |  | |  |  _____| |   |_| |   | \n",
+		"red", "black",		"|   |___|  | |  |       |  |_|  | |_____  |      _|   | \n",
+		"red", "black",		"|    ___|  |_|  |      _|       |_____  | |     |_|   | \n",
+		"red", "black",		"|   |   |       |     |_|       |_____| | |    _  |   | \n",
+		"red", "black",		"|___|   |_______|_______|_______|_______| |___| |_|___| \n\n")
 end
 
 function printMeditate()
-	ColourTell("red", "black",
-		" __   __ _______ ______  ___ _______ _______ _______ _______ \n",
-		"red", "black",
-		"|  |_|  |       |      ||   |       |   _   |       |       |\n",
-		"red", "black",
-		"|       |    ___|  _    |   |_     _|  |_|  |_     _|    ___|\n",
-		"red", "black",
-		"|       |   |___| | |   |   | |   | |       | |   | |   |___ \n",
-		"red", "black",
-		"|       |    ___| |_|   |   | |   | |       | |   | |    ___|\n",
-		"red", "black",
-		"| ||_|| |   |___|       |   | |   | |   _   | |   | |   |___ \n",
-		"red", "black",
-		"|_|   |_|_______|______||___| |___| |__| |__| |___| |_______|\n\n"
+	ColourTell(
+		"red", "black",		" __   __ _______ ______  ___ _______ _______ _______ _______ \n",
+		"red", "black",		"|  |_|  |       |      ||   |       |   _   |       |       |\n",
+		"red", "black",		"|       |    ___|  _    |   |_     _|  |_|  |_     _|    ___|\n",
+		"red", "black",		"|       |   |___| | |   |   | |   | |       | |   | |   |___ \n",
+		"red", "black",		"|       |    ___| |_|   |   | |   | |       | |   | |    ___|\n",
+		"red", "black",		"| ||_|| |   |___|       |   | |   | |   _   | |   | |   |___ \n",
+		"red", "black",		"|_|   |_|_______|______||___| |___| |__| |__| |___| |_______|\n\n"
 		)	
 end
 
 function printStand()
-	ColourTell("red", "black",
-		" _______ _______ _______ __    _ ______    __   __ _______ \n",
-		"red", "black",
-		"|       |       |   _   |  |  | |      |  |  | |  |       |\n",
-		"red", "black",
-		"|  _____|_     _|  |_|  |   |_| |  _    | |  | |  |    _  |\n",
-		"red", "black",
-		"| |_____  |   | |       |       | | |   | |  |_|  |   |_| |\n",
-		"red", "black",
-		"|_____  | |   | |       |  _    | |_|   | |       |    ___|\n",
-		"red", "black",
-		" _____| | |   | |   _   | | |   |       | |       |   |    \n",
-		"red", "black",
-		"|_______| |___| |__| |__|_|  |__|______|  |_______|___|    \n\n")	
+	ColourTell(
+		"red", "black",		" _______ _______ _______ __    _ ______    __   __ _______ \n",
+		"red", "black",		"|       |       |   _   |  |  | |      |  |  | |  |       |\n",
+		"red", "black",		"|  _____|_     _|  |_|  |   |_| |  _    | |  | |  |    _  |\n",
+		"red", "black",		"| |_____  |   | |       |       | | |   | |  |_|  |   |_| |\n",
+		"red", "black",		"|_____  | |   | |       |  _    | |_|   | |       |    ___|\n",
+		"red", "black",		" _____| | |   | |   _   | | |   |       | |       |   |    \n",
+		"red", "black",		"|_______| |___| |__| |__|_|  |__|______|  |_______|___|    \n\n")		
 end
 
 function onNeedFocus()
@@ -1670,6 +1663,21 @@ function onStopTraining (name, line, wildcards, styles)
 	ColourTell("green", "black", "Total PL gained from training: ",
 				"red", "black", shortenNumber(total_training_pl_gained),
 				"green", "black", "\n\n")
+end
+
+function onLootDrop (name, line, wildcards, styles)
+	printWoot()
+end
+
+function printWoot()
+ColourTell(
+	"red", "black", " _     _ _______ _______ _______ \n",
+	"red", "black", "| | _ | |       |       |       |\n",
+	"red", "black", "| || || |   _   |   _   |_     _|\n",
+	"red", "black", "|       |  | |  |  | |  | |   |  \n",
+	"red", "black", "|       |  |_|  |  |_|  | |   |  \n",
+	"red", "black", "|   _   |       |       | |   |  \n",
+	"red", "black", "|__| |__|_______|_______| |___|  \n")
 end
 ]]>
 </script>
