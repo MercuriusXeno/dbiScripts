@@ -597,7 +597,18 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		script="onLootDrop"
 		sequence="100"
 	>	
-	</trigger>		
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^You gained 5 additional training points!$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onEarnedTrains"
+		sequence="100"
+	>	
+	</trigger>	
 </triggers>
 
 <aliases>
@@ -1678,6 +1689,21 @@ ColourTell(
 	"red", "black", "|       |  |_|  |  |_|  | |   |  \n",
 	"red", "black", "|   _   |       |       | |   |  \n",
 	"red", "black", "|__| |__|_______|_______| |___|  \n")
+end
+
+function onEarnedTrains (name, line, wildcards, styles)
+	printTrains()
+end
+
+function printTrains()
+ColourTell(
+"red", "black", " _______ ______   _______ ___ __    _ _______ \n",
+"red", "black", "|       |    _ | |   _   |   |  |  | |       |\n",
+"red", "black", "|_     _|   | || |  |_|  |   |   |_| |  _____|\n",
+"red", "black", "  |   | |   |_||_|       |   |       | |_____ \n",
+"red", "black", "  |   | |    __  |       |   |  _    |_____  |\n",
+"red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
+"red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
 end
 ]]>
 </script>
