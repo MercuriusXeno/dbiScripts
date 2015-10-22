@@ -125,7 +125,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	<trigger	
 		enabled="y"
 		match=".* K:(.*) P:.*"
-		omit_from_output="n"
+		omit_from_output="y"
 		regexp="y"
 		script="onPromptCheck"
 		sequence="100"
@@ -183,6 +183,17 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>
+	
+	<trigger
+		enabled="y"
+		match="^..Everything begins to fade to black.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onEndCombat"
+		sequence="100"
+	>	
+	</trigger>	
 	
 	<trigger	
 		enabled="y"
