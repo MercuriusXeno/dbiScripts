@@ -1795,7 +1795,7 @@ function onThoughtcraftFail (name, line, wildcards, styles)
 		"cyan", "black", tostring(thoughtcraft_attempts),
 		"blue", "black", " (",
 		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
-		"blue", "black", ")")
+		"blue", "black", "%)")
 end
 
 function onThoughtcraftStart (name, line, wildcards, styles)
@@ -1810,7 +1810,7 @@ function onThoughtcraftStop (name, line, wildcards, styles)
 		"cyan", "black", tostring(thoughtcraft_attempts),
 		"blue", "black", " (",
 		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
-		"blue", "black", ")")
+		"blue", "black", "%)")
 end
 
 function onThoughtcraftSucceed (name, line, wildcards, styles)
