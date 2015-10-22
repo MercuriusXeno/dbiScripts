@@ -620,6 +620,70 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^You try to allow your mind to grasp the excess energies of the leylines flowing$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		sequence="100"
+	>	
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^Energy from the leylines pulses in your veins as you wave your$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		sequence="100"
+	>	
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^through you, but the mana current escapes your grasp...$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onThoughtcraftFail"
+		sequence="100"
+	>	
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^hands and create a psychic crystal with the excess energy."
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onThoughtcraftSucceed"
+		sequence="100"
+	>	
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^and collect and merge with your own."
+		omit_from_output="n"
+		keep_evaluating="y"
+		regexp="y"
+		script="onThoughtcraftStart"
+		sequence="100"
+	>	
+	</trigger>	
+	
+	<trigger	
+		enabled="y"
+		match="^You open your eyes and stop trying to create shards."
+		omit_from_output="n"
+		keep_evaluating="y"
+		regexp="y"
+		script="onThoughtcraftStop"
+		sequence="100"
+	>	
+	</trigger>
 </triggers>
 
 <aliases>
@@ -774,6 +838,9 @@ local foe_name = ""
 local times_gravity = 0
 local training_stat = ""
 
+local thoughtcraft_attempts = 0
+local thoughtcraft_successes = 0
+
 function resetMedFocValues()
 	original_max_ki = 0.0
 	current_ki = 0.0
@@ -823,6 +890,9 @@ function resetPromptValues()
 	times_gravity = 0
 	training_stat = ""
 	total_training_pl_gained = 0
+	
+	thoughtcraft_attempts = 0
+	thoughtcraft_successes = 0
 end
 
 
@@ -1715,6 +1785,44 @@ ColourTell(
 "red", "black", "  |   | |    __  |       |   |  _    |_____  |\n",
 "red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
 "red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
+end
+
+function onThoughtcraftFail (name, line, wildcards, styles)
+	thoughtcraft_attempts = thoughtcraft_attempts + 1
+	ColourNote("blue", "black", "Thoughtcraft failed! Successes: ",
+		"cyan", "black", tostring(thoughtcraft_successes),
+		"blue", "black", " out of ",
+		"cyan", "black", tostring(thoughtcraft_attempts),
+		"blue", "black", " (",
+		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
+		"blue", "black", ")")
+end
+
+function onThoughtcraftStart (name, line, wildcards, styles)
+	thoughtcraft_attempts = 0	
+	thoughtcraft_successes = 0
+end
+
+function onThoughtcraftStop (name, line, wildcards, styles)
+	ColourNote("blue", "black", "You stop creating shards. Successes: ",
+		"cyan", "black", tostring(thoughtcraft_successes),
+		"blue", "black", " out of ",
+		"cyan", "black", tostring(thoughtcraft_attempts),
+		"blue", "black", " (",
+		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
+		"blue", "black", ")")
+end
+
+function onThoughtcraftSucceed (name, line, wildcards, styles)
+	thoughtcraft_attempts = thoughtcraft_attempts + 1
+	thoughtcraft_successes = thoughtcraft_successes + 1
+	ColourNote("blue", "black", "Thoughtcraft succeeded! Successes: ",
+		"cyan", "black", tostring(thoughtcraft_successes),
+		"blue", "black", " out of ",
+		"cyan", "black", tostring(thoughtcraft_attempts),
+		"blue", "black", " (",
+		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
+		"blue", "black", "%)")
 end
 ]]>
 </script>
