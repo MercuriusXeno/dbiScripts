@@ -225,8 +225,7 @@ function redirect (name, line, wildcards, styles)
 
   -- if not found, try to open it
   if first_time and not w then
-    local filename = GetInfo (67) .. chat_world .. ".mcl"
-	--local filename = "C:\\Users\\TFiorentini\\AppData\\Local\\VirtualStore\\Program Files (x86)\\MUSHclient\\worlds\\" .. chat_world .. ".MCL"
+    local filename = GetInfo (67) .. chat_world .. ".mcl"	
     Open (filename)
     w = GetWorld (chat_world)  -- try again
     if not w then
