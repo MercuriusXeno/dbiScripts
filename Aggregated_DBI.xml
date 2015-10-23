@@ -684,6 +684,17 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A thick fog rolls through the area.$"
+		omit_from_output=""
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
 </triggers>
 
 <aliases>
@@ -1785,6 +1796,21 @@ ColourTell(
 "red", "black", "  |   | |    __  |       |   |  _    |_____  |\n",
 "red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
 "red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
+end
+
+function printReset()
+ColourTell(
+"red", "black", " ______   _______ _______ _______ _______ \n",
+"red", "black", "|    _ | |       |       |       |       |\n",
+"red", "black", "|   | || |    ___|  _____|    ___|_     _|\n",
+"red", "black", "|   |_||_|   |___| |_____|   |___  |   |  \n",
+"red", "black", "|    __  |    ___|_____  |    ___| |   |  \n",
+"red", "black", "|   |  | |   |___ _____| |   |___  |   |  \n",
+"red", "black", "|___|  |_|_______|_______|_______| |___|  \n")
+end
+
+function onAreaReset (name, line, wildcards, styles)
+	printReset()
 end
 
 function onThoughtcraftFail (name, line, wildcards, styles)
