@@ -695,6 +695,41 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The Ship hums and shakes, the sounds of busy bodies resounding through the ship.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The hologram screens throughout the base display a repeating message, &quot;Train hard and one day you too can be Ginyu!&quot;$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^Vultures begin to circle in the sky overhead.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	
 </triggers>
 
 <aliases>
