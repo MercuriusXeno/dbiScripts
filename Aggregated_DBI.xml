@@ -688,7 +688,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	<trigger	
 		enabled="y"
 		match="^A thick fog rolls through the area.$"
-		omit_from_output=""
+		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
 		script="onAreaReset"
