@@ -179,7 +179,7 @@ Change the variable "chat_world" to be the name of the world chats are to go to.
 
   <trigger
    enabled="y"
-   match="^>>(Human|Halfbreed|Bio-Android|ANDROID|Kaio|Icer)<<(?P<playerName>.*): '(?P<chatMessage>.*)'$"
+   match="^>>(?P<raceName>.*)<<(?P<playerName>.*): '(?P<chatMessage>.*)'$"
    omit_from_output="y"
    regexp="y"
    script="redirect"
