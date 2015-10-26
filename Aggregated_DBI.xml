@@ -698,28 +698,6 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^A thick fog rolls through the area.$"
-		omit_from_output="y"
-		keep_evaluating="y"
-		regexp="y"
-		script="onAreaReset"
-		sequence="100"
-	>	
-	</trigger>
-	
-	<trigger	
-		enabled="y"
-		match="^The Ship hums and shakes, the sounds of busy bodies resounding through the ship.$"
-		omit_from_output="y"
-		keep_evaluating="y"
-		regexp="y"
-		script="onAreaReset"
-		sequence="100"
-	>	
-	</trigger>
-	
-	<trigger	
-		enabled="y"
 		match="^The hologram screens throughout the base display a repeating message, &quot;Train hard and one day you too can be Ginyu!&quot;$"
 		omit_from_output="y"
 		keep_evaluating="y"
@@ -731,7 +709,161 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^Vultures begin to circle in the sky overhead.$"
+		match="^The Ship hums and shakes, the sounds of busy bodies resounding through the ship\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^Vultures begin to circle in the sky overhead\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A thick fog rolls through the area\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A cool breeze breathes fresh life onto the planet\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The howling winds pierce your body, chilling you to the bone\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The sacred chimes of the temple ring through the valley\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^It feels like you've seen this all before somewhere\.\.\.\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The sounds of science and technlology can be heard and felt all around you\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The pure evil of this place tries to crawl into your soul\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The sounds of the forest's wild life can be heard every where\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The sounds of combat and heavy training are quite prevalent in this area\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A roar in the sky signals a new wave of arriving spaceships heading towards the massive spaceport of Feldron\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The dark energy in this place clouds all senses\.\.\.\.\.\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A flash of crimson lightning splits the sky\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^A solar wind pushes the asteroid, shaking the remaining foundations of the Cordican\.\.\.$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -2116,6 +2248,14 @@ function onGainCombatPL(name, line, wildcards, styles)
 	end)
 end
 
+function onAreaReset (name, line, wildcards, styles)
+	require "wait"	
+	wait.make (function ()
+		wait.time(45)
+		printReset()
+	end)
+end
+
 function stringIfValue(str, num)
 	if num > 0 then
 		return str
@@ -2231,10 +2371,6 @@ ColourTell(
 "red", "black", "|    __  |    ___|_____  |    ___| |   |  \n",
 "red", "black", "|   |  | |   |___ _____| |   |___  |   |  \n",
 "red", "black", "|___|  |_|_______|_______|_______| |___|  \n")
-end
-
-function onAreaReset (name, line, wildcards, styles)
-	printReset()
 end
 
 function onThoughtcraftStart (name, line, wildcards, styles)
