@@ -527,7 +527,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|GUT|hack|decimate|thrash|maul|jar|hit|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|GUT|hack|decimate|thrash|maul|jar|hit|MASSACRE|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onDealDamage"
@@ -537,7 +537,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|GUTS|hacks|thrashes|mauls|jars|hits|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|GUTS|hacks|thrashes|mauls|jars|hits|MASSACRES|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onTakeDamage"
@@ -892,6 +892,8 @@ local thoughtcraft_successes = 0
 local windowName = "dbiAggregationWindow" .. GetPluginID()
 local promptWindow = windowName .. "Prompt"
 local currentWindow = windowName .. "Current"
+local combatWindow = windowName .. "Combat"
+local combatWindow2 = windowName .. "Combat2"
 	
 function resetMedFocValues()
 	original_max_ki = 0.0
@@ -967,69 +969,73 @@ function onConnect(name, line, wildcards, styles)
 end
 
 function initializeWindows()
+	initializeWindow(currentWindow)
+	initializeWindow(promptWindow)
+	initializeWindow(combatWindow)
+	initializeWindow(combatWindow2)
+
+	-- find height of font for future calculations             
+	--font_height = WindowFontInfo (promptWindow, font_id, 1)  -- height
+		
+	TextRectangle(0, 0, 50 + GetInfo(213) * 80,
+		-80, 5, ColourNameToRGB("silver"),
+		2,
+		ColourNameToRGB("black"),
+		2)
+		
+	WindowSetZOrder(currentWindow, 0)
+	WindowSetZOrder(promptWindow, 1)
+	WindowSetZOrder(combatWindow, 2)
+	WindowSetZOrder(combatWindow2, 3)
+	
+	purgeCurrentWindow()
+	purgePromptWindow()
+	purgeCombatWindow()
+	purgeCombatWindow2()
+end
+
+function initializeWindow(windowNameString)
 	font_id = "fn"
 	bold_font_id = "fb"
   
 	font_name = "Fixedsys"    -- the actual font
 	font_size = 9
-
-	--PROMPT WINDOW FUNCTIONS
+	
 	-- make window so I can grab the font info
-	WindowCreate (promptWindow, 
+	WindowCreate (windowNameString, 
 		0, 0, 0, 0,  -- empty window
 		miniwin.pos_top_left,   -- position (irrelevant)
 		0,   -- flags (none)
 		0)   -- background colour (black - irrelevant)
                 
 	-- add font in normal and bold styles                 
-	WindowFont (promptWindow, font_id, font_name, font_size, 
+	WindowFont (windowNameString, font_id, font_name, font_size, 
 		false, false, false, false,  -- normal
 		miniwin.font_charset_ansi, miniwin.font_family_any)
 				  
-	WindowFont (promptWindow, bold_font_id, font_name, font_size, 
+	WindowFont (windowNameString, bold_font_id, font_name, font_size, 
 		true, false, false, false,   -- bold
 		miniwin.font_charset_ansi, miniwin.font_family_any)
-
-	-- find height of font for future calculations             
-	font_height = WindowFontInfo (promptWindow, font_id, 1)  -- height
-	
-	--CURRENT WINDOW FUNCTIONS
-		
-	WindowCreate (currentWindow, 
-		0, 0, 0, 0,  -- empty window
-		miniwin.pos_top_left,   -- position (irrelevant)
-		0,   -- flags (none)
-		0)   -- background colour (black - irrelevant)
-                
-	-- add font in normal and bold styles                 
-	WindowFont (currentWindow, font_id, font_name, font_size, 
-		false, false, false, false,  -- normal
-		miniwin.font_charset_ansi, miniwin.font_family_any)
-				  
-	WindowFont (currentWindow, bold_font_id, font_name, font_size, 
-		true, false, false, false,   -- bold
-		miniwin.font_charset_ansi, miniwin.font_family_any)
-	
-	-- find height of font for future calculations             
-	font_height = WindowFontInfo (currentWindow, font_id, 1)  -- height
-	
-	TextRectangle(0, 0, 50 + GetInfo(213) * 80,
-		-64, 5, ColourNameToRGB("gray"),
-		2,
-		ColourNameToRGB("silver"),
-		8)
-	purgePromptWindow()
-	purgeCurrentWindow()
-end
-
-function purgePromptWindow()
-	WindowCreate(promptWindow, 0, 32, 50 + GetInfo(213) * 80, 32, miniwin.pos_bottom_left, 1, ColourNameToRGB("black"))
-	WindowShow(promptWindow, true)
 end
 
 function purgeCurrentWindow()
-	WindowCreate(currentWindow, 0, 32, 50 + GetInfo(213) * 80, 64, miniwin.pos_bottom_left, 1, ColourNameToRGB("black"))
+	WindowCreate(currentWindow, 0, 0, 50 + GetInfo(213) * 80, 64, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
 	WindowShow(currentWindow, true)
+end
+
+function purgePromptWindow()
+	WindowCreate(promptWindow, 0, 0, 50 + GetInfo(213) * 80, 48, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
+	WindowShow(promptWindow, true)
+end
+
+function purgeCombatWindow()
+	WindowCreate(combatWindow, 0, 0, 50 + GetInfo(213) * 80, 32, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
+	WindowShow(combatWindow, true)
+end
+
+function purgeCombatWindow2()
+	WindowCreate(combatWindow2, 0, 0, 50 + GetInfo(213) * 80, 16, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
+	WindowShow(combatWindow2, true)
 end
 
 function onStartMeditate(name, line, wildcards, styles)	
@@ -1047,6 +1053,7 @@ end
  
 function onStopMeditate(name, line, wildcards, styles)
 	if in_meditate then			
+		purgeCurrentWindow()
 		ColourTell("red", "black", "Meditate stopped!")
 		if is_at_max_ki then
 			ColourTell("green", "black", "(", "yellow", "black", "maxed!", "green", "black", ")\n")
@@ -1085,23 +1092,7 @@ function onStopMeditate(name, line, wildcards, styles)
 		
 		if total_meditate_ticks > 0 then
 			total_gained_pl_per_tick = total_gained_pl / total_meditate_ticks
-		end		
-		
-		
-		ColourTell("green", "black", "T:",
-			"white", "black", tostring(round(current_ticks_over_time)),
-			"green", "black", "/s - PL:",
-			"cyan", "black", shortenNumber(round(current_gained_pl_per_tick)),
-			"green", "black", "/t - PL:",
-			"cyan", "black", shortenNumber(round(current_gained_pl_per_second)),
-			"green", "black", "/s -=- T:",
-			"white", "black", tostring(round(total_ticks_over_time)),
-			"green", "black", "/s - PL:",
-			"cyan", "black", shortenNumber(round(total_gained_pl_per_tick)),
-			"green", "black", "/t - PL:",
-			"cyan", "black", shortenNumber(round(total_gained_pl_per_second)),
-			"green", "black", "/s\n"
-			)
+		end
 	
 		in_meditate = false
 	
@@ -1228,42 +1219,6 @@ function onTickFocus (name, line, wildcards, styles)
 	ki_gain_string3 = ""
 	ki_gain_string4 = ""
 	ki_gain_string5 = ""
-end
-
-function onGainedPL (name, line, wildcards, styles)
-	--remove commas
-	local pl_gained = tonumber(stripCommas(wildcards[2]), 10)
-	if in_meditate then 
-		--aggregate gains info
-		current_gained_pl = current_gained_pl + pl_gained
-		
-		pl_gain_string3 = shortenNumber(pl_gained)
-		pl_gain_string4 = shortenNumber(current_gained_pl)
-		
-		ColourTell("gray", "black", "(",
-			"cyan", "black", "Med",
-			"gray", "black", ") ",
-			"yellow", "black", "Time+", 
-			"white", "black", pl_gain_string1, 
-			"yellow", "black", "s (", 
-			"gray", "black", pl_gain_string2, 
-			"yellow", "black", ") ", 
-			"green", "black", "PL+",
-			"red", "black", pl_gain_string3,
-			"green", "black", " (",
-			"blue", "black", pl_gain_string4,
-			"green", "black", ")\n"
-			)
-					
-		pl_gain_string1 = ""
-		pl_gain_string2 = ""
-		pl_gain_string3 = ""
-		pl_gain_string4 = ""
-	elseif training_stat ~= "" then
-		training_pl_gained = training_pl_gained + pl_gained
-	elseif pl_gained > 0 then
-		combat_round_pl_gained = combat_round_pl_gained + pl_gained		
-	end
 end
 
 --ki gained message fires BEFORE the tick message instead of afterwards so I want to concat them to look the same.
@@ -1481,20 +1436,48 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		end
 		ki_color = "red"
 	end
+	local leftTextPos = 4
+	local heightTextStart = 0
 	if combat_round_pl_gained > 0 then
-		ColourTell("green", "black", "This combat round's PL+",
-				"cyan", "black", shortenNumber(combat_round_pl_gained),
-				"green", "black", "\n")
+		purgeCombatWindow2()
+		leftTextPos = leftTextPos + WindowText (combatWindow2, "fn", "PL: +",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (combatWindow2, "fn", shortenNumber(combat_round_pl_gained),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode
 		combat_round_pl_gained = 0
 	end
 	if training_pl_gained > 0 then
-		ColourTell("green", "black", "Training (",
-					"cyan", "black", training_stat,
-					"green", "black", ") at ",
-					"cyan", "black", shortenNumber(times_gravity),
-					"green", "black", " Gs - PL + ",
-					"red", "black", shortenNumber(training_pl_gained),
-					"green", "black", "\n")
+		leftTextPos = 4
+		heightTextStart = 0
+		purgeCombatWindow()
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", "Training (",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", training_stat,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("cyan"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", ") at",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", shortenNumber(times_gravity),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("cyan"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", "Gs - PL + ",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", shortenNumber(training_pl_gained),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode 
 		total_training_pl_gained = total_training_pl_gained + training_pl_gained
 		training_pl_gained = 0
 	end	
@@ -1503,6 +1486,84 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		shortenNumber(max_ki), focus_color, focus_string, pl_color, pl_string, shortenNumber(zeni), dr_color, armor_string, dr_string)
 	if is_low_on_focus then
 		is_low_on_focus = false
+	end
+end
+
+
+function onGainedPL (name, line, wildcards, styles)
+	--remove commas
+	local pl_gained = tonumber(stripCommas(wildcards[2]), 10)
+	if in_meditate then 
+		--aggregate gains info
+		current_gained_pl = current_gained_pl + pl_gained
+		
+		pl_gain_string3 = shortenNumber(pl_gained)
+		pl_gain_string4 = shortenNumber(current_gained_pl)
+		
+		purgeCurrentWindow()
+		local leftTextPos = 4
+		local heightTextStart = 0
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "(",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("gray"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Med",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("cyan"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ")",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("gray"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " Time: ",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", pl_gain_string2,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " sec. (",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "+" .. pl_gain_string1,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("gray"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ") ",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "PL: ",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", pl_gain_string4,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " (",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "+" .. pl_gain_string3,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("blue"), 
+					false) -- not Unicode 
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ")",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("green"), 
+					false) -- not Unicode
+					
+		pl_gain_string1 = ""
+		pl_gain_string2 = ""
+		pl_gain_string3 = ""
+		pl_gain_string4 = ""
+	elseif training_stat ~= "" then
+		training_pl_gained = training_pl_gained + pl_gained
+	elseif pl_gained > 0 then
+		combat_round_pl_gained = combat_round_pl_gained + pl_gained		
 	end
 end
 
@@ -1589,10 +1650,83 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 
 end
 
+
+function onPromptShowRoundInfo(name, line, wildcards, styles)	
+	purgeCurrentWindow()
+	local leftTextPos = 4
+	local heightTextStart = 0
+	
+	if foe_name ~= "" then
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Fighting! (",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", foe_name,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode				
+		leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ")",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode
+	end
+	
+	if hits_since_last_round + damage_dealt_since_last_round + hits_received_since_last_round + damage_received_since_last_round > 0 then	
+		purgeCombatWindow()
+		leftTextPos = 4
+		heightTextStart = 0
+		
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("Hit x", tonumber(damage_dealt_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode		
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_since_last_round), tonumber(damage_dealt_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("magenta"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [", tonumber(damage_dealt_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_dealt_since_last_round), tonumber(damage_dealt_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("magenta"), 
+					false) -- not Unicode		
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]   ", tonumber(damage_dealt_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("Enemy hit x",tonumber(damage_received_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_received_since_last_round),tonumber(damage_received_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [",tonumber(damage_received_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode		
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_received_since_last_round),tonumber(damage_received_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode	
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]",tonumber(damage_received_since_last_round)),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("yellow"), 
+					false) -- not Unicode		
+	end
+	hits_since_last_round = 0
+	damage_dealt_since_last_round = 0
+	hits_received_since_last_round = 0
+	damage_received_since_last_round = 0
+end
+
 function drawPlayerThoughtcraft (successes_string, attempts_string, success_percent_string, is_success_string)
 	purgeCurrentWindow()
 	local leftTextPos = 4
-	local heightTextStart = 16
+	local heightTextStart = 0
 	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "(",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
@@ -1793,11 +1927,15 @@ function onEndCombat(name, line, wildcards, styles)
 		hits = 0
 		enemy_hits = 0
 		overkill_counter = 0
-		foe_name = ""
 		hits_since_last_round = 0
 		damage_dealt_since_last_round = 0
 		hits_received_since_last_round = 0
 		damage_received_since_last_round = 0
+		
+		foe_name = ""
+		purgeCurrentWindow()
+		purgeCombatWindow()
+		purgeCombatWindow2()
 		
 		combats = combats + 1
 	end)
@@ -1905,32 +2043,6 @@ function onGainCombatPL(name, line, wildcards, styles)
 			"red", "black", shortenNumber(pl_gained),
 			"green", "black", "\n")
 	end)
-end
-
-function onPromptShowRoundInfo(name, line, wildcards, styles)	
-	if foe_name ~= "" then
-		ColourTell("red", "black", "Fighting! (",
-					"white", "black", foe_name,
-					"red", "black", ")\n")
-	end
-	
-	if hits_since_last_round + damage_dealt_since_last_round + hits_received_since_last_round + damage_received_since_last_round > 0 then
-			ColourTell("white", "black", stringIfValue("Hit x", tonumber(damage_dealt_since_last_round)),
-			"magenta", "black", stringIfValue(tonumber(hits_since_last_round), tonumber(damage_dealt_since_last_round)),
-			"white", "black", stringIfValue(" [", tonumber(damage_dealt_since_last_round)),
-			"magenta", "black", stringIfValue(tonumber(damage_dealt_since_last_round), tonumber(damage_dealt_since_last_round)),
-			"white", "black", stringIfValue("]\n", tonumber(damage_dealt_since_last_round)),
-			"yellow", "black", stringIfValue("Enemy hit x",tonumber(damage_received_since_last_round)),
-			"red", "black", stringIfValue(tonumber(hits_received_since_last_round),tonumber(damage_received_since_last_round)),
-			"yellow", "black", stringIfValue(" [",tonumber(damage_received_since_last_round)),
-			"red", "black", stringIfValue(tonumber(damage_received_since_last_round),tonumber(damage_received_since_last_round)),
-			"yellow", "black", stringIfValue("]",tonumber(damage_received_since_last_round)),
-			"white", "black", stringIfValue("\n", tonumber(damage_received_since_last_round)))
-	end
-	hits_since_last_round = 0
-	damage_dealt_since_last_round = 0
-	hits_received_since_last_round = 0
-	damage_received_since_last_round = 0
 end
 
 function stringIfValue(str, num)
