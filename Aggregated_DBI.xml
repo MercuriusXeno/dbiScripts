@@ -527,7 +527,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|GUT|hack|decimate|thrash|maul|jar|hit|PULVERIZE|MASSACRE|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|_demolish_|GUT|hack|decimate|thrash|maul|jar|hit|PULVERIZE|MASSACRE|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onDealDamage"
@@ -537,7 +537,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|GUTS|hacks|thrashes|mauls|jars|hits|PULVERIZES|MASSACRES|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|_demolishes_|GUTS|hacks|thrashes|mauls|jars|hits|PULVERIZES|MASSACRES|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onTakeDamage"
