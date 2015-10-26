@@ -677,7 +677,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	<trigger	
 		enabled="y"
 		match="^You open your eyes and stop trying to create shards."
-		omit_from_output="n"
+		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
 		script="onThoughtcraftStop"
@@ -728,6 +728,8 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>
+	
+	
 	
 	
 </triggers>
@@ -887,6 +889,10 @@ local training_stat = ""
 local thoughtcraft_attempts = 0
 local thoughtcraft_successes = 0
 
+local windowName = "dbiAggregationWindow" .. GetPluginID()
+local promptWindow = windowName .. "Prompt"
+local currentWindow = windowName .. "Current"
+	
 function resetMedFocValues()
 	original_max_ki = 0.0
 	current_ki = 0.0
@@ -941,6 +947,9 @@ function resetPromptValues()
 	thoughtcraft_successes = 0
 end
 
+function OnPluginInstall ()
+	initializeWindows()
+end -- OnPluginInstall
 
 function onConnect(name, line, wildcards, styles)	
 	--responsible for resetting all the internal variables to their meaningful defaults
@@ -951,8 +960,76 @@ function onConnect(name, line, wildcards, styles)
 	resetPromptValues()
 
 	resetCombatValues()
+	
+	initializeWindows()
 
 	absolute_start_time = GetInfo(232)
+end
+
+function initializeWindows()
+	font_id = "fn"
+	bold_font_id = "fb"
+  
+	font_name = "Fixedsys"    -- the actual font
+	font_size = 9
+
+	--PROMPT WINDOW FUNCTIONS
+	-- make window so I can grab the font info
+	WindowCreate (promptWindow, 
+		0, 0, 0, 0,  -- empty window
+		miniwin.pos_top_left,   -- position (irrelevant)
+		0,   -- flags (none)
+		0)   -- background colour (black - irrelevant)
+                
+	-- add font in normal and bold styles                 
+	WindowFont (promptWindow, font_id, font_name, font_size, 
+		false, false, false, false,  -- normal
+		miniwin.font_charset_ansi, miniwin.font_family_any)
+				  
+	WindowFont (promptWindow, bold_font_id, font_name, font_size, 
+		true, false, false, false,   -- bold
+		miniwin.font_charset_ansi, miniwin.font_family_any)
+
+	-- find height of font for future calculations             
+	font_height = WindowFontInfo (promptWindow, font_id, 1)  -- height
+	
+	--CURRENT WINDOW FUNCTIONS
+		
+	WindowCreate (currentWindow, 
+		0, 0, 0, 0,  -- empty window
+		miniwin.pos_top_left,   -- position (irrelevant)
+		0,   -- flags (none)
+		0)   -- background colour (black - irrelevant)
+                
+	-- add font in normal and bold styles                 
+	WindowFont (currentWindow, font_id, font_name, font_size, 
+		false, false, false, false,  -- normal
+		miniwin.font_charset_ansi, miniwin.font_family_any)
+				  
+	WindowFont (currentWindow, bold_font_id, font_name, font_size, 
+		true, false, false, false,   -- bold
+		miniwin.font_charset_ansi, miniwin.font_family_any)
+	
+	-- find height of font for future calculations             
+	font_height = WindowFontInfo (currentWindow, font_id, 1)  -- height
+	
+	TextRectangle(0, 0, 50 + GetInfo(213) * 80,
+		-64, 5, ColourNameToRGB("gray"),
+		2,
+		ColourNameToRGB("silver"),
+		8)
+	purgePromptWindow()
+	purgeCurrentWindow()
+end
+
+function purgePromptWindow()
+	WindowCreate(promptWindow, 0, 32, 50 + GetInfo(213) * 80, 32, miniwin.pos_bottom_left, 1, ColourNameToRGB("black"))
+	WindowShow(promptWindow, true)
+end
+
+function purgeCurrentWindow()
+	WindowCreate(currentWindow, 0, 32, 50 + GetInfo(213) * 80, 64, miniwin.pos_bottom_left, 1, ColourNameToRGB("black"))
+	WindowShow(currentWindow, true)
 end
 
 function onStartMeditate(name, line, wildcards, styles)	
@@ -1240,7 +1317,7 @@ function onPromptCheck (name, line, wildcards, styles)
 					"green", "black", "(",
 					"cyan", "black", shortenNumber(total_training_pl_gained),
 					"green", "black", ")",
-					"green", "black", "\n\n")
+					"green", "black", "\n")
 		training_pl_gained = 0
 	end
 	
@@ -1407,7 +1484,7 @@ function onPromptScrape2 (name, line, wildcards, styles)
 	if combat_round_pl_gained > 0 then
 		ColourTell("green", "black", "This combat round's PL+",
 				"cyan", "black", shortenNumber(combat_round_pl_gained),
-				"green", "black", "\n\n")
+				"green", "black", "\n")
 		combat_round_pl_gained = 0
 	end
 	if training_pl_gained > 0 then
@@ -1417,34 +1494,161 @@ function onPromptScrape2 (name, line, wildcards, styles)
 					"cyan", "black", shortenNumber(times_gravity),
 					"green", "black", " Gs - PL + ",
 					"red", "black", shortenNumber(training_pl_gained),
-					"green", "black", "\n\n")
+					"green", "black", "\n")
 		total_training_pl_gained = total_training_pl_gained + training_pl_gained
 		training_pl_gained = 0
-	end
+	end	
 	
-	ColourTell("white", "black", "H[",
-		"red", "black", tostring(health),
-		"white", "black", "] V[",
-		"magenta", "black", foe_string,
-		"white", "black", "] K[",
-		ki_color, "black", tostring(truncate(current_ki * 100.0 / max_ki)),
-		"white", "black", "%/",
-		"blue", "black", shortenNumber(max_ki),
-		"white", "black", "] F[",
-		focus_color, "black", focus_string,
-		"white", "black", "] P[",
-		pl_color, "black", pl_string,
-		"white", "black", "] $[",
-		"yellow", "black", shortenNumber(zeni),
-		"white", "black", "] A[",
-		"green", "black", armor_string,
-		"white", "black", "%] DR[",
-		dr_color, "black", dr_string,
-		"white", "black", "%]"
-		)
+	drawPlayerPrompt(health, foe_string, ki_color, tostring(truncate(current_ki * 100.0 / max_ki)),
+		shortenNumber(max_ki), focus_color, focus_string, pl_color, pl_string, shortenNumber(zeni), dr_color, armor_string, dr_string)
 	if is_low_on_focus then
 		is_low_on_focus = false
 	end
+end
+
+function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki_string, focus_color, focus_string, pl_color, pl_string, zeni_string, armor_color, armor_string, dr_string)
+	purgePromptWindow()
+	local leftTextPos = 4
+	local heightTextStart = 0
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "H[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", health_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("red"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] V[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", foe_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("magenta"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] K[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", ki_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (ki_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%/",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", max_ki_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (ki_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] F[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", focus_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (focus_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] P[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", pl_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (pl_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] $[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", zeni_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] A[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", armor_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (armor_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%] DR[",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", dr_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB (armor_color), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%]",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+
+end
+
+function drawPlayerThoughtcraft (successes_string, attempts_string, success_percent_string, is_success_string)
+	purgeCurrentWindow()
+	local leftTextPos = 4
+	local heightTextStart = 16
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "(",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Thoughtcrafting ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("blue"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", is_success_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ") ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Successes: ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("blue"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", successes_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " out of ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("blue"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", attempts_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " (",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", success_percent_string,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "%)",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+end
+
+
+function onThoughtcraftSucceed (name, line, wildcards, styles)
+	thoughtcraft_attempts = thoughtcraft_attempts + 1
+	thoughtcraft_successes = thoughtcraft_successes + 1
+	drawPlayerThoughtcraft(tostring(thoughtcraft_successes), tostring(thoughtcraft_attempts), tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)), "succeeded!")	
+end
+
+function onThoughtcraftFail (name, line, wildcards, styles)
+	thoughtcraft_attempts = thoughtcraft_attempts + 1
+	drawPlayerThoughtcraft(tostring(thoughtcraft_successes), tostring(thoughtcraft_attempts), tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)), "failed!")
 end
 
 function onGetZeni (name, line, wildcards, styles)
@@ -1467,7 +1671,7 @@ function printFocusKi()
 		"red", "black",		"|   |___|  | |  |       |  |_|  | |_____  |      _|   | \n",
 		"red", "black",		"|    ___|  |_|  |      _|       |_____  | |     |_|   | \n",
 		"red", "black",		"|   |   |       |     |_|       |_____| | |    _  |   | \n",
-		"red", "black",		"|___|   |_______|_______|_______|_______| |___| |_|___| \n\n")
+		"red", "black",		"|___|   |_______|_______|_______|_______| |___| |_|___| \n")
 end
 
 function printMeditate()
@@ -1478,7 +1682,7 @@ function printMeditate()
 		"red", "black",		"|       |   |___| | |   |   | |   | |       | |   | |   |___ \n",
 		"red", "black",		"|       |    ___| |_|   |   | |   | |       | |   | |    ___|\n",
 		"red", "black",		"| ||_|| |   |___|       |   | |   | |   _   | |   | |   |___ \n",
-		"red", "black",		"|_|   |_|_______|______||___| |___| |__| |__| |___| |_______|\n\n"
+		"red", "black",		"|_|   |_|_______|______||___| |___| |__| |__| |___| |_______|\n"
 		)	
 end
 
@@ -1490,7 +1694,7 @@ function printStand()
 		"red", "black",		"| |_____  |   | |       |       | | |   | |  |_|  |   |_| |\n",
 		"red", "black",		"|_____  | |   | |       |  _    | |_|   | |       |    ___|\n",
 		"red", "black",		" _____| | |   | |   _   | | |   |       | |       |   |    \n",
-		"red", "black",		"|_______| |___| |__| |__|_|  |__|______|  |_______|___|    \n\n")		
+		"red", "black",		"|_______| |___| |__| |__|_|  |__|______|  |_______|___|    \n")		
 end
 
 function onNeedFocus()
@@ -1792,7 +1996,7 @@ function onStopTraining (name, line, wildcards, styles)
 					"cyan", "black", shortenNumber(times_gravity),
 					"green", "black", " Gs - PL + ",
 					"red", "black", shortenNumber(training_pl_gained),
-					"green", "black", "\n\n")
+					"green", "black", "\n")
 		total_training_pl_gained = total_training_pl_gained + training_pl_gained
 		training_pl_gained = 0
 	end
@@ -1800,7 +2004,7 @@ function onStopTraining (name, line, wildcards, styles)
 	training_stat = ""
 	ColourTell("green", "black", "Total PL gained from training: ",
 				"red", "black", shortenNumber(total_training_pl_gained),
-				"green", "black", "\n\n")
+				"green", "black", "\n")
 end
 
 function onLootDrop (name, line, wildcards, styles)
@@ -1848,36 +2052,15 @@ function onAreaReset (name, line, wildcards, styles)
 	printReset()
 end
 
-function onThoughtcraftFail (name, line, wildcards, styles)
-	thoughtcraft_attempts = thoughtcraft_attempts + 1
-	ColourNote("blue", "black", "Thoughtcraft failed! Successes: ",
-		"cyan", "black", tostring(thoughtcraft_successes),
-		"blue", "black", " out of ",
-		"cyan", "black", tostring(thoughtcraft_attempts),
-		"blue", "black", " (",
-		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
-		"blue", "black", "%)")
-end
-
 function onThoughtcraftStart (name, line, wildcards, styles)
+	purgeCurrentWindow()
 	thoughtcraft_attempts = 0	
 	thoughtcraft_successes = 0
 end
 
 function onThoughtcraftStop (name, line, wildcards, styles)
+	purgeCurrentWindow()
 	ColourNote("blue", "black", "You stop creating shards. Successes: ",
-		"cyan", "black", tostring(thoughtcraft_successes),
-		"blue", "black", " out of ",
-		"cyan", "black", tostring(thoughtcraft_attempts),
-		"blue", "black", " (",
-		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
-		"blue", "black", "%)")
-end
-
-function onThoughtcraftSucceed (name, line, wildcards, styles)
-	thoughtcraft_attempts = thoughtcraft_attempts + 1
-	thoughtcraft_successes = thoughtcraft_successes + 1
-	ColourNote("blue", "black", "Thoughtcraft succeeded! Successes: ",
 		"cyan", "black", tostring(thoughtcraft_successes),
 		"blue", "black", " out of ",
 		"cyan", "black", tostring(thoughtcraft_attempts),
