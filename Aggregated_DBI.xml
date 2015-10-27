@@ -991,6 +991,9 @@ script="setPrompt"
 --causes max ki to show up instead of just percentages in prompt, defaults to false.
 local show_max_ki = false
 
+--causes end-of-fight summaries to show up after combat, defaults to false.
+local show_battle_synopsis = false
+
 local original_max_ki = 0.0
 local current_ki = 0.0
 local max_ki = 0.0
@@ -2104,7 +2107,10 @@ function onGetZeni (name, line, wildcards, styles)
 
 	require "wait"
 	wait.make (function ()
-		wait.time (0.8)
+		wait.time(0.2)
+		if show_battle_synopsis then
+			wait.time (0.6)
+		end 		
 		local received_zeni = wildcards[1]
 		ColourTell("white", "black", "    You found ",
 			"yellow", "black", received_zeni,
@@ -2185,35 +2191,37 @@ function onEndCombat(name, line, wildcards, styles)
 
 	require "wait"
 	wait.make (function ()
-		wait.time (0.2)
-		ColourTell("red", "black", "\n Fight's over!\n")
-		wait.time (0.2)
-		ColourTell("white", "black", "  Hit: ",
-			"cyan", "black", tostring(hits),
-			"cyan", "black", "(" .. tostring(round(hits * 100.0 / attacks)) .. "%)",
-			"white", "black", " Miss: ",	
-			"cyan", "black", tostring(misses + enemy_soaks),
-			"cyan", "black", "(" .. tostring(round((misses + enemy_soaks) * 100.0 / attacks)) .. "%)",
-			"white", "black", " DPH: ",
-			"cyan", "black", tostring(round((damage_dealt + overkill_counter) / hits)),
-			"white", "black", " Overkill: ",
-			"cyan", "black", shortenNumber(overkill_counter),
-			"white", "black", "\n")		
-		if defends + enemy_hits + enemy_misses + soaks + blocks + dodges + damage_received > 0 then
+		if show_battle_synopsis then
 			wait.time (0.2)
-			ColourTell(
-				"yellow", "black", "   (Enemy) Hit: ",
-				"magenta", "black", tostring(enemy_hits),
-				"cyan", "black", "(" .. tostring(round(enemy_hits * 100.0 / defends)) .. "%)",
-				"yellow", "black", " Miss: ",
-				"magenta", "black", tostring(enemy_misses + soaks + blocks + dodges),
-				"cyan", "black", "(" .. tostring(round((enemy_misses + soaks + blocks + dodges) * 100.0 / defends)) .. "%)",	
-				"yellow", "black", " Dmg: ",
-				"red", "black", tostring(damage_received),	
-				"yellow", "black", " (Avg:",
-				"cyan", "black", tostring(round(nilZero(damage_received / enemy_hits))),
-				"yellow", "black", ")",
-				"white", "black", "\n")
+			ColourTell("red", "black", "\n Fight's over!\n")
+			wait.time (0.2)
+			ColourTell("white", "black", "  Hit: ",
+				"cyan", "black", tostring(hits),
+				"cyan", "black", "(" .. tostring(round(hits * 100.0 / attacks)) .. "%)",
+				"white", "black", " Miss: ",	
+				"cyan", "black", tostring(misses + enemy_soaks),
+				"cyan", "black", "(" .. tostring(round((misses + enemy_soaks) * 100.0 / attacks)) .. "%)",
+				"white", "black", " DPH: ",
+				"cyan", "black", tostring(round((damage_dealt + overkill_counter) / hits)),
+				"white", "black", " Overkill: ",
+				"cyan", "black", shortenNumber(overkill_counter),
+				"white", "black", "\n")		
+			if defends + enemy_hits + enemy_misses + soaks + blocks + dodges + damage_received > 0 then
+				wait.time (0.2)
+				ColourTell(
+					"yellow", "black", "   (Enemy) Hit: ",
+					"magenta", "black", tostring(enemy_hits),
+					"cyan", "black", "(" .. tostring(round(enemy_hits * 100.0 / defends)) .. "%)",
+					"yellow", "black", " Miss: ",
+					"magenta", "black", tostring(enemy_misses + soaks + blocks + dodges),
+					"cyan", "black", "(" .. tostring(round((enemy_misses + soaks + blocks + dodges) * 100.0 / defends)) .. "%)",	
+					"yellow", "black", " Dmg: ",
+					"red", "black", tostring(damage_received),	
+					"yellow", "black", " (Avg:",
+					"cyan", "black", tostring(round(nilZero(damage_received / enemy_hits))),
+					"yellow", "black", ")",
+					"white", "black", "\n")
+			end
 		end
 		
 		total_attacks = total_attacks + attacks
@@ -2350,7 +2358,10 @@ function onGainCombatPL(name, line, wildcards, styles)
 	onPromptShowRoundInfo(name, line, wildcards, styles)
 	require "wait"	
 	wait.make (function ()
-		wait.time (1.0)
+		wait.time(0.4)
+		if show_battle_synopsis then
+			wait.time (0.6)
+		end
 		local num_str = stripCommas(wildcards[2])
 		local pl_gained = tonumber(num_str, 10)
 		combat_pl = combat_pl + pl_gained
