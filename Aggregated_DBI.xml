@@ -907,7 +907,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger
 		enabled="y"
-		match="^(You attempt to dodge kicks from Chuck Norris.|You attempt to outrun your energy blast.|You attempt to outrun a cheetah.|You attempt to dodge kicks from Jet Li.|You attempt to keep up with a rave.|You try to steal Master Roshi's magazines.)$"
+		match="^(You attempt to dodge kicks from Chuck Norris.|You attempt to outrun your energy blast.|You attempt to outrun a cheetah.|You attempt to dodge kicks from Jet Li.|You attempt to keep up with a rave.|You try to steal Master Roshi's magazines.|You try to run from Mephablo.|You dodge energy blasts from training droids.|You race a fat person to the buffet line.|You juggle small kittens.)$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -2219,6 +2219,8 @@ function onEndCombat(name, line, wildcards, styles)
 					"yellow", "black", ")",
 					"white", "black", "\n")
 			end
+		else
+			wait.time(0.6)
 		end
 		
 		total_attacks = total_attacks + attacks
