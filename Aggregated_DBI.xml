@@ -1008,6 +1008,32 @@ local pl_gain_string3 = ""
 local pl_gain_string4 = ""
 local is_low_on_focus = false
 
+local percent_lookup_table = {10, 19, 28, 37, 46, 55, 64, 73, 82, 91, 100}
+local armor_percent_lookup_table = {80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100}
+local color_percent_lookup_table = {"red", "orangered", "darkorange", "orange", "gold", "yellow", "greenyellow", "lawngreen", "lightgreen", "palegreen", "cyan"}
+
+function color_from_percent(percent)
+	local percent_forced_numeric = tonumber(percent)
+	local lowest_value_index = 11
+	for i=1, 11 do
+		if percent_forced_numeric <= percent_lookup_table[i] and i <= lowest_value_index then
+			lowest_value_index = i		
+		end	
+	end	
+	return color_percent_lookup_table[lowest_value_index]
+end
+
+function armor_color_from_percent(percent)
+	local percent_forced_numeric = tonumber(percent)
+	local highest_value_index = 11
+	for i=1, 11 do
+		if percent_forced_numeric <= armor_percent_lookup_table[i] and i <= highest_value_index then
+			highest_value_index = i		
+		end	
+	end
+	return color_percent_lookup_table[highest_value_index]
+end
+
 --tells the script you've already gotten the meditate message from promptCheck, prevents it from firing more than once in a round
 local already_received_meditate_message = false
 
@@ -1579,18 +1605,13 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		focus_string = tostring(truncate(current_focus * 100.0 / max_focus)) .. "%/" .. tostring(current_focus)
 	end
 	
-	local focus_color = "cyan"
-	if is_low_on_focus then
-		focus_color = "red"
-	end
+	local focus_color = color_from_percent(current_focus * 100.0 / max_focus)
 	
 	local armor_string = "-"
 	local dr_color = "cyan"
 	if max_armor > 0 then
 		armor_string = tostring(truncate(current_armor * 100.0 / max_armor))
-		if (current_armor * 100.0 / max_armor) < 80 then
-			dr_color = "red"
-		end
+		dr_color = armor_color_from_percent(current_armor * 100.0 / max_armor)
 	end
 	
 	local foe_string = "-"
@@ -1606,8 +1627,8 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		pl_color = "gray"		
 	end
 	
-	local ki_color = "cyan"
-	if (truncate(current_ki * 100.0 / max_ki)) < 20 then
+	local ki_color = color_from_percent(current_ki * 100.0 / max_ki)
+	if (current_ki * 100.0 / max_ki) < 20 then
 		if in_focus then
 			if already_received_meditate_message then
 				already_received_meditate_message = false
@@ -1615,8 +1636,8 @@ function onPromptScrape2 (name, line, wildcards, styles)
 				printMeditate()
 			end
 		end
-		ki_color = "red"
 	end
+	
 	local leftTextPos = 4
 	local heightTextStart = 0
 	if combat_round_pl_gained > 0 then
@@ -1780,7 +1801,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				false) -- not Unicode
 	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", health_string,
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
-				ColourNameToRGB ("red"), 
+				ColourNameToRGB (color_from_percent(health)), 
 				false) -- not Unicode
 	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] V[",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
