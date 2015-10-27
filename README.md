@@ -37,17 +37,21 @@ Install: Click your "DBI" world to make it active and go to File -> Plugins -> A
   * That's all.
   * Without this, the aggregator will still work, it just won't work as well. You want this in your list.
 
-####4. [The good stuff] Aggregated_DBI
+####4. [optional but nice, definitely recommend using this with Aggregated_DBI installed] Omit_Blank_Lines
+  * Rips all the blank lines from your output, cleans things up quite a bit.
+Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Omit_Blank_Lines.xml  
+  * You're done! This should improve the blank line "spam" from the script.
+  
+####5. [The good stuff] Aggregated_DBI
   * Scrapes all kinds of data to give you meaningful statistics, reduced spam and colorful output.
 Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Aggregated_DBI.xml
-  * Before this will work [mostly], you need to use my prompt and battle prompt. 
-  * It's required for the regex to work properly on your prompts.
-  * I've made this very simple: type "setPrompt" and "setBattlePrompt".
-  * Two aliases I've created in the script will change your prompt for you!
+  * Once you're connected and you've logged into your character, type "setPrompt" and "setBattlePrompt".  
+  * In order for my prompt-scraping regex to work as intended, you've gotta use my custom prompts. Sorry.
   * You're done! Enjoy the [hopefully] improved DBI experience!
 
-####Some disclaimer:
-  * Alert messages will appear when important things happen:
+##Features of the Aggregator:
+####Alerts
+######Alerts will appear when certain things occur.
     * While meditating, if you max out, it will alert you to Focus Ki. (Sorry if you're kicapped!)
     * While focusing, and below 20% of your max Ki, it alerts you to Meditate.
     * Anytime your Ki is below 20%, it turns RED.
