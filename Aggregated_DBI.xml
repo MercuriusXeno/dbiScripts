@@ -124,7 +124,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match=".* K:(.*) P:.*"
+		match="^.* K:(.*) P:.*$"
 		omit_from_output="y"
 		regexp="y"
 		script="onPromptCheck"
@@ -165,7 +165,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^P\[(.*)\|(.*)\] \$\[\$(.*)\] A\[(.*)/(.*)\]$"
+		match="^P\[(.*)\|(.*)\] \$\[\$(.*)\] A\[(.*)/(.*)\] B\[(.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onPromptScrape2"
@@ -176,6 +176,17 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	<trigger	
 		enabled="y"
 		match="^(.*) is DEAD!!$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onEndCombat"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^You stab (.*) in the chest with your tail and suck out (.*) life force\.$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -977,6 +988,8 @@ script="setPrompt"
 
 <script>
 <![CDATA[
+--causes max ki to show up instead of just percentages in prompt, defaults to false.
+local show_max_ki = false
 
 local original_max_ki = 0.0
 local current_ki = 0.0
@@ -1007,6 +1020,7 @@ local pl_gain_string2 = ""
 local pl_gain_string3 = ""
 local pl_gain_string4 = ""
 local is_low_on_focus = false
+local biomass = 0
 
 local percent_lookup_table = {10, 19, 28, 37, 46, 55, 64, 73, 82, 91, 100}
 local armor_percent_lookup_table = {80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100}
@@ -1047,8 +1061,8 @@ local foe_health = 0
 local current_focus = 0
 local max_focus = 0
 --PL here is a string, it's cool.
-local base_pl = ""
-local max_pl = ""
+local base_pl = 0
+local max_pl = 0
 local zeni = 0
 local current_armor = 0
 local max_armor = 0
@@ -1108,11 +1122,14 @@ local promptWindow = windowName .. "Prompt"
 local currentWindow = windowName .. "Current"
 local combatWindow = windowName .. "Combat"
 local combatWindow2 = windowName .. "Combat2"
+
+local prompt_tick_flag = true
 	
 function resetMedFocValues()
 	original_max_ki = 0.0
 	current_ki = 0.0
 	max_ki = 0.0
+	biomass = 0
 	current_gained_pl = 0.0
 	total_gained_pl = 0.0
 	current_gained_ki = 0.0
@@ -1148,8 +1165,8 @@ function resetPromptValues()
 	current_focus = 0
 	max_focus = 0
 	
-	base_pl = ""
-	max_pl = ""
+	base_pl = 0
+	max_pl = 0
 	zeni = 0
 	current_armor = 0
 	max_armor = 0
@@ -1562,6 +1579,35 @@ function shortenNumber(num)
 	return tostring(round(num)) .. lookup_table[thousand_counter]
 end
 
+function expandNumber(num_str)	
+	num_str = stripCommas(num_str)
+	local lookup_table = {
+		[""] = 0,
+		["k"] = 1,
+		["m"] = 2,
+		["b"] = 3,
+		["q"] = 4,
+		["qi"] = 5}
+	
+	local ends_with = string.sub(num_str, -1, -2)
+	local num = tonumber(num_str, 10)
+	
+	if tonumber(num_str, 10) ~= nil then
+		ends_with = ""
+	else
+		num = tonumber(string.sub(num_str, 1, -2), 10)
+	end
+	
+	local thousand_counter = lookup_table[ends_with]
+	
+	while thousand_counter > 0 do
+		thousand_counter = thousand_counter - 1
+		num = num * 1000
+	end
+	
+	return num
+end
+
 function stripCommas(str)
 	return string.gsub(str,",","")
 end
@@ -1593,16 +1639,17 @@ function onBattlePromptScrape (name, line, wildcards, styles)
 end
 
 function onPromptScrape2 (name, line, wildcards, styles)
-	base_pl = wildcards[1]
-	current_pl = wildcards[2]
+	base_pl = expandNumber(wildcards[1])
+	current_pl = tonumber(stripCommas(wildcards[2]), 10)
 	zeni = tonumber(stripCommas(wildcards[3]), 10)
 	current_armor = tonumber(stripCommas(wildcards[4]), 10)
 	max_armor = tonumber(stripCommas(wildcards[5]), 10)	
+	biomass = tonumber(stripCommas(wildcards[6]), 10)
 	
 	local focus_string = "-"
 	
 	if max_focus > 0 then
-		focus_string = tostring(truncate(current_focus * 100.0 / max_focus)) .. "%/" .. tostring(current_focus)
+		focus_string = tostring(current_focus)
 	end
 	
 	local focus_color = color_from_percent(current_focus * 100.0 / max_focus)
@@ -1619,12 +1666,31 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		foe_string = tostring(foe_health)
 	end
 	local dr_string = tostring(math.min(80,truncate(current_armor / 100.0)))
+		
+	local pl_percentage = current_pl / base_pl
 	
-	
-	local pl_string = current_pl
-	local pl_color = "red"
-	if base_pl == current_pl then
-		pl_color = "gray"		
+	if pl_percentage >= 15 then		
+		pl_color = "cyan"
+	elseif pl_percentage >= 12 then		
+		pl_color = "palegreen"
+	elseif pl_percentage >= 9 then		
+		pl_color = "lightgreen"
+	elseif pl_percentage >= 6 then		
+		pl_color = "lawngreen"
+	elseif pl_percentage >= 3 then		
+		pl_color = "greenyellow"
+	elseif pl_percentage >= .99 then		
+		pl_color = "yellow"
+	elseif pl_percentage >= .8 then		
+		pl_color = "gold"
+	elseif pl_percentage >= .6 then		
+		pl_color = "orange"
+	elseif pl_percentage >= .4 then		
+		pl_color = "darkorange"
+	elseif pl_percentage >= .2 then		
+		pl_color = "orangered"
+	else
+		pl_color = "red"
 	end
 	
 	local ki_color = color_from_percent(current_ki * 100.0 / max_ki)
@@ -1642,7 +1708,7 @@ function onPromptScrape2 (name, line, wildcards, styles)
 	local heightTextStart = 0
 	if combat_round_pl_gained > 0 then
 		purgeCombatWindow2()
-		leftTextPos = leftTextPos + WindowText (combatWindow2, "fn", "PL: +",
+		leftTextPos = leftTextPos + WindowText (combatWindow2, "fn", "  PL: +",
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("green"), 
 					false) -- not Unicode
@@ -1659,7 +1725,7 @@ function onPromptScrape2 (name, line, wildcards, styles)
 	end	
 	
 	drawPlayerPrompt(health, foe_string, ki_color, tostring(truncate(current_ki * 100.0 / max_ki)),
-		shortenNumber(max_ki), focus_color, focus_string, pl_color, pl_string, shortenNumber(zeni), dr_color, armor_string, dr_string)
+		shortenNumber(max_ki), focus_color, focus_string, pl_color, shortenNumber(current_pl), shortenNumber(zeni), dr_color, armor_string, dr_string)
 	if is_low_on_focus then
 		is_low_on_focus = false
 	end
@@ -1795,7 +1861,20 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 	purgePromptWindow()
 	local leftTextPos = 4
 	local heightTextStart = 0
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "H[",
+	if prompt_tick_flag then
+		prompt_tick_flag = false 
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "* ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode
+	else
+		prompt_tick_flag = true
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "  ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode	
+	end
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "H:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1803,7 +1882,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (color_from_percent(health)), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] V[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " V:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1811,7 +1890,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("magenta"), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] K[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " K:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1819,15 +1898,17 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (ki_color), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%/",
-				leftTextPos, heightTextStart, 0, 0,  -- rectangle
-				ColourNameToRGB ("white"), 
-				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", max_ki_string,
-				leftTextPos, heightTextStart, 0, 0,  -- rectangle
-				ColourNameToRGB (ki_color), 
-				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] F[",
+	if show_max_ki then
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "/",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", max_ki_string,
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB (ki_color), 
+					false) -- not Unicode
+	end
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " F:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1835,7 +1916,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (focus_color), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] P[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " P:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1843,7 +1924,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (pl_color), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] $[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " $:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1851,7 +1932,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("yellow"), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "] A[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " A:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1859,7 +1940,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (armor_color), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%] DR[",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " DR:",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
@@ -1867,10 +1948,20 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB (armor_color), 
 				false) -- not Unicode
-	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "%]",
+	leftTextPos = leftTextPos + WindowText (promptWindow, "fn", "",
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
+	if biomass > 0 then
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", " B:",
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("white"), 
+					false) -- not Unicode
+		leftTextPos = leftTextPos + WindowText (promptWindow, "fn", shortenNumber(biomass),
+					leftTextPos, heightTextStart, 0, 0,  -- rectangle
+					ColourNameToRGB ("red"), 
+					false) -- not Unicode
+	end
 
 end
 
@@ -1904,39 +1995,39 @@ function onPromptShowRoundInfo(name, line, wildcards, styles)
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("white"), 
 					false) -- not Unicode		
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_since_last_round), tonumber(damage_dealt_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_since_last_round, 10), tonumber(damage_dealt_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("magenta"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [", tonumber(damage_dealt_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [", tonumber(damage_dealt_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("white"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_dealt_since_last_round), tonumber(damage_dealt_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_dealt_since_last_round, 10), tonumber(damage_dealt_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("magenta"), 
 					false) -- not Unicode		
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]   ", tonumber(damage_dealt_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]   ", tonumber(damage_dealt_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("white"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("Enemy hit x",tonumber(damage_received_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("Enemy hit x",tonumber(damage_received_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("yellow"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_received_since_last_round),tonumber(damage_received_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(hits_received_since_last_round),tonumber(damage_received_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("red"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [",tonumber(damage_received_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(" [",tonumber(damage_received_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("yellow"), 
 					false) -- not Unicode		
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_received_since_last_round),tonumber(damage_received_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue(tonumber(damage_received_since_last_round, 10),tonumber(damage_received_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("red"), 
 					false) -- not Unicode	
-		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]",tonumber(damage_received_since_last_round)),
+		leftTextPos = leftTextPos + WindowText (combatWindow, "fn", stringIfValue("]",tonumber(damage_received_since_last_round, 10)),
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("yellow"), 
 					false) -- not Unicode		
@@ -2229,7 +2320,7 @@ function onTakeDamage (name, line, wildcards, styles)
 	defends = defends + 1
 	enemy_hits = enemy_hits + 1
 	local dam_str = stripCommas(wildcards.damage)
-	local dam_num = tonumber(dam_str)
+	local dam_num = tonumber(dam_str, 10)
 	damage_received = damage_received + dam_num
 	
 	hits_received_since_last_round = hits_received_since_last_round + 1
@@ -2243,7 +2334,7 @@ function onDealDamage (name, line, wildcards, styles)
 	attacks = attacks + 1
 	hits = hits + 1
 	local dam_str = stripCommas(wildcards.damage)
-	local dam_num = tonumber(dam_str)
+	local dam_num = tonumber(dam_str, 10)
 	damage_dealt = damage_dealt + dam_num
 	--you can never do more than 100 damage in a single combat, this clamps it
 	if damage_dealt > 100 then
@@ -2261,7 +2352,7 @@ function onGainCombatPL(name, line, wildcards, styles)
 	wait.make (function ()
 		wait.time (1.0)
 		local num_str = stripCommas(wildcards[2])
-		local pl_gained = tonumber(num_str)
+		local pl_gained = tonumber(num_str, 10)
 		combat_pl = combat_pl + pl_gained
 		ColourTell("green", "black", "     Total PL+",
 			"red", "black", shortenNumber(pl_gained),
@@ -2315,12 +2406,12 @@ function onReportGains (name, line, wildcards)
 end
 
 function setPrompt (name, line, wildcards)
-	local str = "prompt &WH[&R%h&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%X&W] $[&G$%g&W] A[&G%z&W/&g%Z&W]%Y&D"
+	local str = "prompt &WH[&R%h&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%p&W] $[&G$%g&W] A[&G%z&W/&g%Z&W] B[&R%Q&W]%Y&D"
 	Send(str)
 end
 
 function setBattlePrompt (name, line, wildcards)
-	local str = "fprompt &WH[&R%h&W] V[&r%y&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%X&W] $[&G$%g&W] A[&G%z&W/&g%Z&W]%Y&D"
+	local str = "fprompt &WH[&R%h&W] V[&r%y&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%p&W] $[&G$%g&W] A[&G%z&W/&g%Z&W] B[&R%Q&W]%Y&D"
 	Send(str)
 end
 
