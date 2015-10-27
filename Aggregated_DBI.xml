@@ -1275,7 +1275,6 @@ end
 
 function onStartMeditate(name, line, wildcards, styles)	
 	if in_meditate == false then
-		--ColourNote("red", "black", "Starting meditate!")
 		--reset all counters
 		last_meditate_tick = GetInfo(232)	
 		current_meditate_ticks = 0.0
@@ -1337,7 +1336,6 @@ end
 
 function onStartFocus(name, line, wildcards, styles)
 	if in_focus == false then	
-		--ColourNote("red", "black", "Starting focus!")
 		--reset all counters
 		last_focus_tick = GetInfo(232)
 		current_elapsed_focus_time = 0
@@ -1504,13 +1502,11 @@ function onPromptCheck (name, line, wildcards, styles)
 	
 	
 	if current_ki == 0 and in_focus then
-		--ColourNote("red","black", "Out of ki!\n")
 		is_out_of_ki = true
 		onStopFocus (name, line, wildcards, styles)
 	end
 	
 	if current_ki == max_ki and max_ki > 0 and in_meditate then
-		--ColourNote("red","black", "You're at max ki!\n")
 		is_at_max_ki = true
 		onStopMeditate (name, line, wildcards, styles)		
 	end
@@ -1585,23 +1581,24 @@ end
 function expandNumber(num_str)	
 	num_str = stripCommas(num_str)
 	local lookup_table = {
-		[""] = 0,
+		["-"] = 0,
 		["k"] = 1,
 		["m"] = 2,
 		["b"] = 3,
 		["q"] = 4,
 		["qi"] = 5}
+		
+	local ends_with = string.sub(num_str, -1)
 	
-	local ends_with = string.sub(num_str, -1, -2)
 	local num = tonumber(num_str, 10)
 	
 	if tonumber(num_str, 10) ~= nil then
-		ends_with = ""
+		ends_with = "-"
 	else
 		num = tonumber(string.sub(num_str, 1, -2), 10)
 	end
 	
-	local thousand_counter = lookup_table[ends_with]
+	local thousand_counter = tonumber(lookup_table[ends_with])
 	
 	while thousand_counter > 0 do
 		thousand_counter = thousand_counter - 1
@@ -2476,24 +2473,35 @@ end
 
 function printTrains()
 ColourTell(
-"red", "black", " _______ ______   _______ ___ __    _ _______ \n",
-"red", "black", "|       |    _ | |   _   |   |  |  | |       |\n",
-"red", "black", "|_     _|   | || |  |_|  |   |   |_| |  _____|\n",
-"red", "black", "  |   | |   |_||_|       |   |       | |_____ \n",
-"red", "black", "  |   | |    __  |       |   |  _    |_____  |\n",
-"red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
-"red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
+	"red", "black", " _______ ______   _______ ___ __    _ _______ \n",
+	"red", "black", "|       |    _ | |   _   |   |  |  | |       |\n",
+	"red", "black", "|_     _|   | || |  |_|  |   |   |_| |  _____|\n",
+	"red", "black", "  |   | |   |_||_|       |   |       | |_____ \n",
+	"red", "black", "  |   | |    __  |       |   |  _    |_____  |\n",
+	"red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
+	"red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
 end
 
 function printReset()
 ColourTell(
-"red", "black", " ______   _______ _______ _______ _______ \n",
-"red", "black", "|    _ | |       |       |       |       |\n",
-"red", "black", "|   | || |    ___|  _____|    ___|_     _|\n",
-"red", "black", "|   |_||_|   |___| |_____|   |___  |   |  \n",
-"red", "black", "|    __  |    ___|_____  |    ___| |   |  \n",
-"red", "black", "|   |  | |   |___ _____| |   |___  |   |  \n",
-"red", "black", "|___|  |_|_______|_______|_______| |___|  \n")
+	"red", "black", " ______   _______ _______ _______ _______ \n",
+	"red", "black", "|    _ | |       |       |       |       |\n",
+	"red", "black", "|   | || |    ___|  _____|    ___|_     _|\n",
+	"red", "black", "|   |_||_|   |___| |_____|   |___  |   |  \n",
+	"red", "black", "|    __  |    ___|_____  |    ___| |   |  \n",
+	"red", "black", "|   |  | |   |___ _____| |   |___  |   |  \n",
+	"red", "black", "|___|  |_|_______|_______|_______| |___|  \n")
+end
+
+function printOmNom()
+ColourTell(
+	"red", "black", " _______ __   __ __    _ _______ __   __ \n",
+	"red", "black", "|       |  |_|  |  |  | |       |  |_|  |\n",
+	"red", "black", "|   _   |       |   |_| |   _   |       |\n",
+	"red", "black", "|  | |  |       |       |  | |  |       |\n",
+	"red", "black", "|  |_|  |       |  _    |  |_|  |       |\n",
+	"red", "black", "|       | ||_|| | | |   |       | ||_|| |\n",
+	"red", "black", "|_______|_|   |_|_|  |__|_______|_|   |_|\n")
 end
 
 function onThoughtcraftStart (name, line, wildcards, styles)
@@ -2504,7 +2512,7 @@ end
 
 function onThoughtcraftStop (name, line, wildcards, styles)
 	purgeCurrentWindow()
-	ColourNote("blue", "black", "You stop creating shards. Successes: ",
+	ColourTell("blue", "black", "You stop creating shards. Successes: ",
 		"cyan", "black", tostring(thoughtcraft_successes),
 		"blue", "black", " out of ",
 		"cyan", "black", tostring(thoughtcraft_attempts),
