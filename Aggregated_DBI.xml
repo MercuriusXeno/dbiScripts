@@ -917,18 +917,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger
 		enabled="y"
-		match="^(You try to lift water from a glass with your mind.|You create energy balls.|You meditate under a waterfall.|You raise and lower your powerlevel.|You attempt to focus while being bombarded with energy blasts.|You attempt to read Chi-chi's mind.|You attempt to figure out Jack Thompson's logic.|You change the color of your aura back and forth.|You fire rapid energy blasts in quick succession.|You allow your power to push beyond it's max for a moment.|You fire energy blasts at training droids.)$"
-		omit_from_output="y"
-		keep_evaluating="y"
-		regexp="y"
-		script="onTrainingFlavorText"
-		sequence="100"
-	>	
-	</trigger>
-	
-	<trigger
-		enabled="y"
-		match="^(You listen to Borfin complain.|You break dance.|You deal with Chi-chi's nagging.|You are trampled by a group of Good Charlotte groupies.|You allow energy blasts to slam into you.|You sit through an Uwe Boll movie.)$"
+		match="^(You push Goku away from food.|You halt the planets rotation with your bare hands.|You bench press Jack Thompson's ego.|You smash through solid steel walls.|You pull apart two strong magnets.|You stop a speeding bus with one hand.|You wrestle a massive metal droid.)$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -950,7 +939,18 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger
 		enabled="y"
-		match="^(You push Goku away from food.|You halt the planets rotation with your bare hands.|You bench press Jack Thompson's ego.|You smash through solid steel walls.|You pull apart two strong magnets.)$"
+		match="^(You try to lift water from a glass with your mind.|You create energy balls.|You meditate under a waterfall.|You raise and lower your powerlevel.|You attempt to focus while being bombarded with energy blasts.|You attempt to read Chi-chi's mind.|You attempt to figure out Jack Thompson's logic.|You change the color of your aura back and forth.|You fire rapid energy blasts in quick succession.|You allow your power to push beyond it's max for a moment.|You fire energy blasts at training droids.|You force your power to double it's normal limit for a moment.)$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onTrainingFlavorText"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger
+		enabled="y"
+		match="^(You listen to Borfin complain.|You break dance.|You deal with Chi-chi's nagging.|You are trampled by a group of Good Charlotte groupies.|You allow energy blasts to slam into you.|You sit through an Uwe Boll movie.|You are hit by training droids.|You are chewed up by a dinosaur.)$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -1609,7 +1609,7 @@ end
 
 function shortenNumber(num)
 	local thousand_counter = 0
-	while num > 1000 do
+	while num >= 1000 do
 		thousand_counter = thousand_counter + 1
 		num = num / 1000
 	end
