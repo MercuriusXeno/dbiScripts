@@ -31,18 +31,7 @@ Install: before this will work, you need to modify LINE # 28 of this script.
   * Afterwards, click on your "DBI Chats" world to make it active, then go to File -> Plugins -> Add -> Chat_Input_Sender.xml
   * That's all! You should now be able to type in your chat world and still have it send to the real DBI world.
 
-####3. [Not really optional] Add_NewLine_To_Prompt
-  * Forces the idle prompt (H:* K:* P:*) to add a newline to itself when received, allowing the aggregators various triggers to fire as intended. Without it, triggers won't fire until a newline occurs, after each idle prompt, which is annoying.
-Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Add_NewLine_To_Prompt.xml
-  * That's all.
-  * Without this, the aggregator will still work, it just won't work as well. You want this in your list.
-
-####4. [optional but nice, definitely recommend using this with Aggregated_DBI installed] Omit_Blank_Lines
-  * Rips all the blank lines from your output, cleans things up quite a bit.
-Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Omit_Blank_Lines.xml  
-  * You're done! This should improve the blank line "spam" from the script.
-  
-####5. [The good stuff] Aggregated_DBI
+####3. [The good stuff] Aggregated_DBI
   * Scrapes all kinds of data to give you meaningful statistics, reduced spam and colorful output.
 Install: Click your "DBI" world to make it active and go to File -> Plugins -> Add -> Aggregated_DBI.xml
   * Once you're connected and you've logged into your character, type "setPrompt" and "setBattlePrompt".  
@@ -54,12 +43,12 @@ Install: Click your "DBI" world to make it active and go to File -> Plugins -> A
 ######Alerts will appear when certain things occur.
     * While meditating, if you max out, it will alert you to Focus Ki. (Sorry if you're kicapped!)
     * While focusing, and below 20% of your max Ki, it alerts you to Meditate.
-    * Anytime your Ki is below 20%, it turns RED.
-    * If your armor falls below 80% durability, it turns your DR [damage reduction%] to RED, reminding you to repair.
+    * Ki, Health, PL, Armor and DR %s all have a color gradient to indicate how "full" they are.
+	* Ki and Health are scaled from 0 to 100, while DR bottoms out "red" at 80%, indicating a poor armor durability.
+	* PL color gradient scales between fractions of PL (~0.2x) all the way up to 15x (anything higher shows blue).
     * Any time you receive the "You must stand to do that!" message, it alerts you to STAND UP.
     * Any time you try to use an ability and don't have enough Focus, your Focus will turn RED for a single prompt cycle.
-  * Your focus % is based on the HIGHEST NUMBER THE SCRIPT HAS SEEN SINCE YOUR LAST LOGIN.
-    * Ignore it until it hits max and then it will be accurate from that point on.
+    * Focus is also based on color gradient, but it will always be bright blue until the script has detected the highest possible value of Focus you can achieve, after which it will accurately represent the percent of focus you have.
 
 ####Suggestions:
 I won't go into detail, but there's a lot of redux output. Some of it you may like, some if it you might not. 
