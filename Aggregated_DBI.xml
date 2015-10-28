@@ -883,6 +883,17 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	>	
 	</trigger>
 	
+	<trigger	
+		enabled="y"
+		match="^You surge with new found power as you learn (.*)$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onBioSkillAbsorb"
+		sequence="100"
+	>	
+	</trigger>
+	
 	<trigger
 		enabled="y"
 		match="^(You try to lift water from a glass with your mind.|You create energy balls.|You meditate under a waterfall.|You raise and lower your powerlevel.|You attempt to focus while being bombarded with energy blasts.|You attempt to read Chi-chi's mind.|You attempt to figure out Jack Thompson's logic.|You change the color of your aura back and forth.|You fire rapid energy blasts in quick succession.|You allow your power to push beyond it's max for a moment.|You fire energy blasts at training droids.)$"
