@@ -200,7 +200,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
-		script="onEndCombat"
+		script="onKilled"
 		sequence="100"
 	>	
 	</trigger>	
@@ -2234,6 +2234,17 @@ function resetCombatValues()
 	combats = 0
 	overkill_counter = 0
 	foe_name = ""
+end
+
+function onKilled (name, line, wildcards, styles)
+
+	require "wait"
+	wait.make (function ()
+			ColourTell("red", "black", "You died! Damage received, last round: " .. damage_received_since_last_round)
+			wait.time (1)
+			onEndCombat(name, line, wildcards, styles)
+	end)
+
 end
 
 function onEndCombat(name, line, wildcards, styles)	
