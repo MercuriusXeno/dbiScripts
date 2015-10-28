@@ -885,6 +885,28 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
+		match="^A solar wind passes over the asteroid, slowly eroding the remnants of the Leviathan\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
+		match="^The symphonies of Kayin transition into the next movement\.$"
+		omit_from_output="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onAreaReset"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
 		match="^You surge with new found power as you learn (?P<skillName>.*)$"
 		omit_from_output="y"
 		keep_evaluating="y"
