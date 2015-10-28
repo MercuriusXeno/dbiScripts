@@ -1,6 +1,8 @@
 
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE muclient>
+<!DOCTYPE muclient[
+	<!ENTITY prompt_regexp "(?m).*37m\\(.*37mK.*34m:.*37m.* \\z" > 
+]>
 <!-- Saved on Saturday, June 30, 2007, 10:48  -->
 <!-- MuClient version 4.13 -->
 
@@ -972,6 +974,15 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		sequence="100"
 	>	
 	</trigger>
+ 
+	  <trigger
+	   enabled="y"
+	   match="^$"
+	   omit_from_output="y"
+	   regexp="y"
+	   sequence="100"
+	  >
+	  </trigger> 
 	
 	
 </triggers>
@@ -1032,6 +1043,18 @@ script="setPrompt"
 
 <script>
 <![CDATA[
+re = rex.new ("&prompt_regexp;")
+
+function OnPluginPacketReceived (s)
+
+  if (re:match (s)) then
+    return s .. "\n"	
+  else
+    return s
+  end -- if 
+  
+end -- function OnPluginPacketReceived
+
 --causes max ki to show up instead of just percentages in prompt, defaults to false.
 local show_max_ki = false
 
