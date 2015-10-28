@@ -885,7 +885,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You surge with new found power as you learn (.*)$"
+		match="^You surge with new found power as you learn (?P<skillName>.*)$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -2536,6 +2536,13 @@ end
 
 function onTrainingFlavorText (name, line, wildcards, styles)	
 	training_flavor_text = wildcards[0]
+end
+
+function onBioSkillAbsorb (name, line, wildcards, styles)
+ColourTell("palegreen", "black", "You absorb ",
+	"cyan", "black", wildcards.skillName,
+	"palegreen", "black", "!")
+	printOmNom()
 end
 ]]>
 </script>
