@@ -938,7 +938,18 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	>	
 	</trigger>
 	
-	
+	<trigger
+		enabled="y"
+		match="\AAn Empty Room\s+This room is rather plain and simple.  There isn't really anything in\s+here.  There is a picture on the wall, a rug on the floor and a table\s+aginst the north part of the wall. It looks like there is an outline of a\s+circle in the middle of the rug.\s+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\Z"
+		omit_from_output="n"
+		lines_to_match="6"
+		multi_line="y"
+		keep_evaluating="y"
+		regexp="y"
+		script="onEnter5bWarning"
+		sequence="100"
+	>	
+	</trigger>
 	
 	
 </triggers>
@@ -2517,6 +2528,17 @@ ColourTell(
 	"red", "black", "|_______|_|   |_|_|  |__|_______|_|   |_|\n")
 end
 
+function printSuppress()
+ColourTell(
+	"red", "black", " _______ __   __ _______ _______ ______   _______ _______ _______ \n",
+	"red", "black", "|       |  | |  |       |       |    _ | |       |       |       |\n",
+	"red", "black", "|  _____|  | |  |    _  |    _  |   | || |    ___|  _____|  _____|\n",
+	"red", "black", "| |_____|  |_|  |   |_| |   |_| |   |_||_|   |___| |_____| |_____ \n",
+	"red", "black", "|_____  |       |    ___|    ___|    __  |    ___|_____  |_____  |\n",
+	 "red", "black"," _____| |       |   |   |   |   |   |  | |   |___ _____| |_____| |\n",
+	"red", "black", "|_______|_______|___|   |___|   |___|  |_|_______|_______|_______|\n")
+end
+
 function onThoughtcraftStart (name, line, wildcards, styles)
 	purgeCurrentWindow()
 	thoughtcraft_attempts = 0	
@@ -2543,6 +2565,12 @@ ColourTell("palegreen", "black", "You absorb ",
 	"cyan", "black", wildcards.skillName,
 	"palegreen", "black", "!")
 	printOmNom()
+end
+
+function onEnter5bWarning (name, line, wildcards, styles)
+	if current_pl ~= nil and current_pl > 5000000000 then
+		printSuppress()
+	end
 end
 ]]>
 </script>
