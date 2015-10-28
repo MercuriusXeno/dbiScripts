@@ -1,8 +1,5 @@
-
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE muclient[
-	<!ENTITY prompt_regexp "(?m).*37m\\(.*37mK.*34m:.*37m.* \\z" > 
-]>
+<!DOCTYPE muclient[]>
 <!-- Saved on Saturday, June 30, 2007, 10:48  -->
 <!-- MuClient version 4.13 -->
 
@@ -1043,17 +1040,6 @@ script="setPrompt"
 
 <script>
 <![CDATA[
-re = rex.new ("&prompt_regexp;")
-
-function OnPluginPacketReceived (s)
-
-  if (re:match (s)) then
-    return s .. "\n"	
-  else
-    return s
-  end -- if 
-  
-end -- function OnPluginPacketReceived
 
 --causes max ki to show up instead of just percentages in prompt, defaults to false.
 local show_max_ki = false
@@ -2617,6 +2603,18 @@ function onEnter5bWarning (name, line, wildcards, styles)
 		printSuppress()
 	end
 end
+
+
+local re = rex.new ("(?m).*37m\\(.*37mK.*34m:.*37m.* \\z")
+
+function OnPluginPacketReceived (s)
+  if (re:match (s)) then
+    return s .. "\n"	
+  else
+    return s
+  end -- if   
+end -- function OnPluginPacketReceived
+
 ]]>
 </script>
 </muclient>
