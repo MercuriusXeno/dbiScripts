@@ -133,6 +133,16 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
+		match="^.* E:(.*) T:.*$"
+		omit_from_output="y"
+		regexp="y"
+		script="onPromptCheck"
+		sequence="100"
+	>	
+	</trigger>
+	
+	<trigger	
+		enabled="y"
 		match="^H\[.*\] K\[(.*)/(.*)\] F\[.*\]"
 		omit_from_output="n"
 		regexp="y"
@@ -1047,6 +1057,9 @@ local show_max_ki = false
 --causes end-of-fight summaries to show up after combat, defaults to false.
 local show_battle_synopsis = false
 
+--causes end of med/foc to show session averages, defaults to false
+local show_ki_synopsis = false
+
 local original_max_ki = 0.0
 local current_ki = 0.0
 local max_ki = 0.0
@@ -1438,6 +1451,7 @@ function onStopFocus(name, line, wildcards, styles)
 			total_gained_ki_per_tick = total_gained_ki / total_focus_ticks
 		end	
 		
+		if show_ki_synopsis then
 		ColourTell("green", "black", "T:",
 			"white", "black", tostring(round(current_ticks_over_time)),
 			"green", "black", "/s - Ki:",
@@ -1452,7 +1466,7 @@ function onStopFocus(name, line, wildcards, styles)
 			"cyan", "black", tostring(round(total_gained_ki_per_second)),
 			"green", "black", "/s\n"
 			)
-		
+		end
 		in_focus = false
 	
 		onReportGains(name, line, wildcards)
@@ -1480,25 +1494,72 @@ function onTickFocus (name, line, wildcards, styles)
 	last_focus_tick = current_focus_tick
 	
 	ki_gain_string1 = tostring(elapsed_focus_time)
-	ki_gain_string2 = tostring(current_elapsed_focus_time)
+	ki_gain_string2 = tostring(current_elapsed_focus_time)	
+
+	purgeCurrentWindow()
+	local leftTextPos = 4
+	local heightTextStart = 0
 	
-	--ki tick occurs after ki gain so the message goes here
-	ColourTell("gray", "black", "(",
-		"cyan", "black", "Foc",
-		"gray", "black", ")",
-		"yellow", "black", " Time+", 
-		"white", "black", ki_gain_string1, 
-		"yellow", "black", "s (", 
-		"gray", "black", ki_gain_string2, 
-		"yellow", "black", ") ",
-		"green", "black", "Ki+",
-		"red", "black", ki_gain_string3,
-		"green", "black", " (",
-		"cyan", "black", ki_gain_string4,
-		"green", "black", ")",
-		"green", "black", " Max:",
-		"blue", "black", ki_gain_string5,
-		"green", "black", "\n")		
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "(",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("gray"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Foc",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ")",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("gray"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " Time: ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ki_gain_string2,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("white"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " sec. (",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "+" .. ki_gain_string1,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("gray"), 
+				false) -- not Unicode
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ") ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("yellow"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Ki: ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("green"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ki_gain_string4,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("red"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", " (",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("green"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "+" .. ki_gain_string3,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("blue"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ") ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("green"), 
+				false) -- not Unicode	
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", "Max: ",
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("green"), 
+				false) -- not Unicode 
+	leftTextPos = leftTextPos + WindowText (currentWindow, "fn", ki_gain_string5,
+				leftTextPos, heightTextStart, 0, 0,  -- rectangle
+				ColourNameToRGB ("cyan"), 
+				false) -- not Unicode 
 
 	ki_gain_string1 = ""
 	ki_gain_string2 = ""
@@ -1578,20 +1639,19 @@ function onReportGains (name, line, wildcards)
 	end
 	local total_elapsed_time_in_minutes = current_total_time / 60
 	
-	
-	ColourTell(
-		"yellow", "black", "(Ki) Session: ",
-		"white", "black", tostring(round(total_elapsed_time_in_minutes)),
-		"yellow", "black", " min. - Ki:",
-		"red", "black", tostring(round(ki_gained_per_second)),
-		"yellow", "black", "/s (",
-		"cyan", "black", shortenNumber(total_gained_ki),
-		"yellow", "black", ") - PL:",
-		"red", "black", tostring(round(pl_gained_per_second)),
-		"yellow", "black", "/s (",
-		"cyan", "black", shortenNumber(total_gained_pl),
-		"yellow", "black", ")\n"
-	)
+		ColourTell(
+			"yellow", "black", "(Ki) Session: ",
+			"white", "black", tostring(round(total_elapsed_time_in_minutes)),
+			"yellow", "black", " min. - Ki:",
+			"red", "black", tostring(round(ki_gained_per_second)),
+			"yellow", "black", "/s (",
+			"cyan", "black", shortenNumber(total_gained_ki),
+			"yellow", "black", ") - PL:",
+			"red", "black", tostring(round(pl_gained_per_second)),
+			"yellow", "black", "/s (",
+			"cyan", "black", shortenNumber(total_gained_pl),
+			"yellow", "black", ")\n"
+		)
 end
 
 function round(num)
@@ -2450,35 +2510,6 @@ function stringIfValue(str, num)
 	end
 end
 
-function onReportGains (name, line, wildcards)
-	local right_now = GetInfo(232)
-	local total_elapsed_time = right_now - absolute_start_time
-	
-	local ki_gained_per_second = 0.0
-	local pl_gained_per_second = 0.0
-	local current_total_time = total_elapsed_time + current_elapsed_focus_time + current_elapsed_meditate_time
-	if current_total_time > 0 then
-		ki_gained_per_second = (total_gained_ki + current_gained_ki) / current_total_time
-		pl_gained_per_second = (total_gained_pl + current_gained_pl) / current_total_time
-	end
-	local total_elapsed_time_in_minutes = current_total_time / 60
-	
-	
-	ColourTell(
-		"yellow", "black", "(Ki) Session: ",
-		"white", "black", tostring(round(total_elapsed_time_in_minutes)),
-		"yellow", "black", " min. - Ki:",
-		"red", "black", tostring(round(ki_gained_per_second)),
-		"yellow", "black", "/s (",
-		"cyan", "black", shortenNumber(total_gained_ki),
-		"yellow", "black", ") - PL:",
-		"red", "black", tostring(round(pl_gained_per_second)),
-		"yellow", "black", "/s (",
-		"cyan", "black", shortenNumber(total_gained_pl),
-		"yellow", "black", ")\n"
-	)
-end
-
 function setPrompt (name, line, wildcards)
 	local str = "prompt &WH[&R%h&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%p&W] $[&G$%g&W] A[&G%z&W/&g%Z&W] B[&R%Q&W]%Y&D"
 	Send(str)
@@ -2616,12 +2647,13 @@ function onEnter5bWarning (name, line, wildcards, styles)
 end
 
 
-local re = rex.new ("(?m).*37m\\(.*37mK.*34m:.*37m.* \\z")
+local re = rex.new ("(?m).*37m\\(.*37mK.*34m:.*37m\\).*\\Z")
+local re2 = rex.new ("(?m).*37m\\(.*37mE.*34m:.*37m\\).*\\Z")
 
-function OnPluginPacketReceived (s)
-  if (re:match (s)) then
+function OnPluginPacketReceived (s) 
+  if (re:match (s)) or (re2:match (s)) then 
     return s .. "\n"	
-  else
+  else 
     return s
   end -- if   
 end -- function OnPluginPacketReceived
