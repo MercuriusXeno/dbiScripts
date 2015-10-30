@@ -413,7 +413,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	>	
 	</trigger>	
 	
-	<trigger	
+	<trigger
 		enabled="y"
 		match="^(\)|)\s*You miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
@@ -1041,6 +1041,18 @@ keep_evaluating="n"
 send_to="12"
 sequence="100"
 script="setPrompt"
+>
+</alias>
+
+<alias
+match="^test$"
+enabled="y"
+expand_variables="y"
+regexp="y"
+keep_evaluating="n"
+send_to="12"
+sequence="100"
+script="debugPrompt"
 >
 </alias>
 
@@ -2646,18 +2658,48 @@ function onEnter5bWarning (name, line, wildcards, styles)
 	end
 end
 
-
-local re = rex.new ("(?m).*37m\\(.*37mK.*34m:.*37m\\).*\\Z")
-local re2 = rex.new ("(?m).*37m\\(.*37mE.*34m:.*37m\\).*\\Z")
+function cleanPacket (packetString)
+	local culledString = string.gsub(packetString, "%[0;37m", "")
+	culledString = string.gsub(culledString, "%[0;36m", "")
+	culledString = string.gsub(culledString, "%[1;30m", "")
+	culledString = string.gsub(culledString, "%[1;34m", "")
+	culledString = string.gsub(culledString, "%[1;36m", "")
+	culledString = string.gsub(culledString, "%[1;37m", "")
+	culledString = string.gsub(culledString, "%[0m", "")
+	culledString = string.gsub(culledString, "\\x1B", "") --scrape escape codes??
+	culledString = string.gsub(culledString, "\n", "") -- scrape newlines...
+	return culledString
+end
 
 function OnPluginPacketReceived (s) 
-  if (re:match (s)) or (re2:match (s)) then 
-    return s .. "\n"	
-  else 
-    return s
-  end -- if   
+	--my strategy for simplifying the regex here is 
+	--to cull the codes from the packet! It's unreadable!
+	local culledString = cleanPacket(s)
+	
+	local startPrompt = string.find(culledString, "%b()")
+	if startPrompt == nil then 
+		return s
+	end
+	
+	local promptString = string.sub(culledString, startPrompt + 1, -3)
+	
+	--this is me giving up on stupid fucking regex
+	local indexOfLife = string.find(promptString, "L", 1, true)
+	if indexOfLife then
+		local indexOfKi = string.find(promptString, "K", indexOfLife, true)
+		if indexOfKi then
+			local indexOfPower = string.find(promptString, "P", indexOfKi, true)			
+			if indexOfPower then
+				return s .. "\n"
+			end
+		end
+	end
+	
+	return s
 end -- function OnPluginPacketReceived
 
+function debugPrompt ()
+end
 ]]>
 </script>
 </muclient>
