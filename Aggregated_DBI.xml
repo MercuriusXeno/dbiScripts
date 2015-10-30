@@ -245,7 +245,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You must stand to do that!$"
+		match="^(\)|)\s*You must stand to do that!$"
 		omit_from_output="y"
 		regexp="y"
 		script="printStand"
@@ -255,7 +255,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You need to focus more.$"
+		match="^(\)|)\s*You need to focus more.$"
 		omit_from_output="y"
 		regexp="y"
 		script="onNeedFocus"
@@ -265,7 +265,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) hits you, but you soak the damage\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) hits you, but you soak the damage\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onSoak"
@@ -275,7 +275,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) hits you. You laugh at .* weak power\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) hits you. You laugh at .* weak power\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onSoak"
@@ -285,7 +285,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*)'s hit is absorbed by the ki energy surrounding you\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*)'s hit is absorbed by the ki energy surrounding you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onSoak"
@@ -295,7 +295,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You cross your arms and block (?P<foename>.*)'s hit\. \[0\]$"
+		match="^(\)|)\s*You cross your arms and block (?P<foename>.*)'s hit\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onSoak"
@@ -305,7 +305,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) lands .* hit but you just grin at .*\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) lands .* hit but you just grin at .*\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onSoak"
@@ -315,7 +315,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You block (?P<foename>.*)'s physical attack\.$"
+		match="^(\)|)\s*You block (?P<foename>.*)'s physical attack\.$"
 		omit_from_output="y"
 		regexp="y"
 		script="onBlock"
@@ -325,7 +325,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You dodge (?P<foename>.*)'s hit with incredible speed\. \[0\]$"
+		match="^(\)|)\s*You dodge (?P<foename>.*)'s hit with incredible speed\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -335,7 +335,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) overextends .* and misses you\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) overextends .* and misses you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -345,7 +345,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) trips on something and misses you\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) trips on something and misses you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -355,7 +355,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) aims too (low|high) and misses you\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) aims too (low|high) and misses you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -365,7 +365,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 		
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) loses concentration for a moment and misses you\. \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) loses concentration for a moment and misses you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -375,7 +375,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You chuckle as (?P<foename>.*) goes off-balance by missing you\. \[0\]$"
+		match="^(\)|)\s*You chuckle as (?P<foename>.*) goes off-balance by missing you\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -385,7 +385,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You (duck under|jump over) (?P<foename>.*)'s attack\. \[0\]$"
+		match="^(\)|)\s*You (duck under|jump over) (?P<foename>.*)'s attack\. \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -395,7 +395,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) misses you\.  \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) misses you\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemyMiss"
@@ -405,7 +405,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You dodge (?P<foename>.*)'s physical attack\.$"
+		match="^(\)|)\s*You dodge (?P<foename>.*)'s physical attack\.$"
 		omit_from_output="y"
 		regexp="y"
 		script="onDodge"
@@ -415,7 +415,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You miss (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*You miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -425,7 +425,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You get laughed at by (?P<foename>.*) for your off-balance miss\.  \[0\]$"
+		match="^(\)|)\s*You get laughed at by (?P<foename>.*) for your off-balance miss\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -435,7 +435,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You lose concentration for a moment and miss (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*You lose concentration for a moment and miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -445,7 +445,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You aim too (high|low) and miss (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*You aim too (high|low) and miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -455,7 +455,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) (jumps over|ducks under) your attack\.  \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) (jumps over|ducks under) your attack\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -465,7 +465,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) dodges your hit with incredible speed\.  \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) dodges your hit with incredible speed\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -475,7 +475,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You trip on something and miss (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*You trip on something and miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -485,7 +485,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You overextend yourself and miss (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*You overextend yourself and miss (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onMiss"
@@ -495,7 +495,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) crosses .* arms and blocks your hit\.  \[0\]$"
+		match="^(\)|)\s*(?P<foename>.*) crosses .* arms and blocks your hit\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemySoak"
@@ -505,7 +505,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^You hit (?P<foename>.+?) but (he|she|it+?) seems to shrug off the damage\.  \[0\]$"
+		match="^(\)|)\s*You hit (?P<foename>.+?) but (he|she|it+?) seems to shrug off the damage\.  \[0\]$"
 		omit_from_output="y"
 		keep_evaluating="n"
 		regexp="y"
@@ -516,7 +516,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^You land your hit but (?P<foename>.*) just grins at you\.  \[0\]$"
+		match="^(\)|)\s*You land your hit but (?P<foename>.*) just grins at you\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemySoak"
@@ -526,7 +526,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You hit (?P<foename>.+?)\.\s(.+?)\sjust laughs at your weak power\. \[0\]$"
+		match="^(\)|)\s*You hit (?P<foename>.+?)\.\s(.+?)\sjust laughs at your weak power\. \[0\]$"
 		omit_from_output="y"
 		keep_evaluating="n"
 		regexp="y"
@@ -537,7 +537,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^Your hit is absorbed by the ki energy surrounding (?P<foename>.*)\.  \[0\]$"
+		match="^(\)|)\s*Your hit is absorbed by the ki energy surrounding (?P<foename>.*)\.  \[0\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onEnemySoak"
@@ -547,7 +547,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger	
 		enabled="y"
-		match="^You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|_demolish_|GUT|hack|decimate|thrash|maul|jar|hit|PULVERIZE|MASSACRE|MUTILATE|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^(\)|)\s*You (tickle|brush|scratch|tear|cut|graze|nick|jolt|wound|_traumatize_|injure|gash|lacerate|rip|_devastate_|_mangle_|_maim_|DISEMBOWEL|_cleave_|_demolish_|GUT|hack|decimate|thrash|maul|jar|hit|PULVERIZE|MASSACRE|MUTILATE|DESTROY|\*\*\*\* ATOMIZE \*\*\*\*|\*\*\* ANNIHILATE \*\*\*|\* VAPORIZE \*|\* LIQUIFY \*|\* OBLITERATE \*)\s+(?P<foename>.*)(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onDealDamage"
@@ -557,7 +557,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 
 	<trigger	
 		enabled="y"
-		match="^(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|_demolishes_|GUTS|hacks|thrashes|mauls|jars|hits|PULVERIZES|MASSACRES|MUTILATES|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
+		match="^(\)|)\s*(?P<foename>.*) (tickles|brushes|scratches|tears|cuts|grazes|nicks|jolts|wounds|_traumatizes_|injures|decimates|gashes|lacerates|rips|_devastates_|_mangles_|_maims_|DISEMBOWELS|_cleaves_|_demolishes_|GUTS|hacks|thrashes|mauls|jars|hits|PULVERIZES|MASSACRES|MUTILATES|DESTROYS|\*\*\*\* ATOMIZES \*\*\*\*|\*\*\* ANNIHILATES \*\*\*|\* VAPORIZES \*|\* LIQUIFIES \*|\* OBLITERATES \*) you(\!|\.)\s+\[(?P<damage>.*)\]$"
 		omit_from_output="y"
 		regexp="y"
 		script="onTakeDamage"
@@ -2636,7 +2636,7 @@ end
 function onBioSkillAbsorb (name, line, wildcards, styles)
 ColourTell("palegreen", "black", "You absorb ",
 	"cyan", "black", wildcards.skillName,
-	"palegreen", "black", "!")
+	"palegreen", "black", "!\n")
 	printOmNom()
 end
 
