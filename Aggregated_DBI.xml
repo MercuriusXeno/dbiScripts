@@ -949,7 +949,7 @@ Records to the various messages in the MUD Prompt/med/focus to report statistics
 	
 	<trigger
 		enabled="y"
-		match="^(You try to lift water from a glass with your mind.|You create energy balls.|You meditate under a waterfall.|You raise and lower your powerlevel.|You attempt to focus while being bombarded with energy blasts.|You attempt to read Chi-chi's mind.|You attempt to figure out Jack Thompson's logic.|You change the color of your aura back and forth.|You fire rapid energy blasts in quick succession.|You allow your power to push beyond it's max for a moment.|You fire energy blasts at training droids.|You force your power to double it's normal limit for a moment.)$"
+		match="^(You try to lift water from a glass with your mind.|You create energy balls.|You meditate under a waterfall.|You raise and lower your powerlevel.|You attempt to focus while being bombarded with energy blasts.|You attempt to read Chi-chi's mind.|You attempt to figure out Jack Thompson's logic.|You change the color of your aura back and forth.|You fire rapid energy blasts in quick succession.|You allow your power to push beyond it's max for a moment.|You fire energy blasts at training droids.|You force your power to double it's normal limit for a moment.|You cause your powerlevel to spike madly.)$"
 		omit_from_output="y"
 		keep_evaluating="y"
 		regexp="y"
@@ -1829,10 +1829,10 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		end
 	end
 	
+	purgeCombatWindow2()
 	local leftTextPos = 4
 	local heightTextStart = 0
 	if combat_round_pl_gained > 0 then
-		purgeCombatWindow2()
 		leftTextPos = leftTextPos + WindowText (combatWindow2, "fn", "  PL: +",
 					leftTextPos, heightTextStart, 0, 0,  -- rectangle
 					ColourNameToRGB ("green"), 
@@ -2111,8 +2111,8 @@ function onPromptShowRoundInfo(name, line, wildcards, styles)
 					false) -- not Unicode
 	end
 	
+	purgeCombatWindow()
 	if hits_since_last_round + damage_dealt_since_last_round + hits_received_since_last_round + damage_received_since_last_round > 0 then	
-		purgeCombatWindow()
 		leftTextPos = 4
 		heightTextStart = 0
 		
@@ -2689,6 +2689,15 @@ function OnPluginPacketReceived (s)
 		local indexOfKi = string.find(promptString, "K", indexOfLife, true)
 		if indexOfKi then
 			local indexOfPower = string.find(promptString, "P", indexOfKi, true)			
+			if indexOfPower then
+				return s .. "\n"
+			end
+		end
+	else 
+		indexOfLife = string.find(promptString, "D", 1, true)
+		local indexOfKi = string.find(promptString, "E", indexOfLife, true)
+		if indexOfKi then
+			local indexOfPower = string.find(promptString, "T", indexOfKi, true)			
 			if indexOfPower then
 				return s .. "\n"
 			end
