@@ -2695,11 +2695,13 @@ function OnPluginPacketReceived (s)
 		end
 	else 
 		indexOfLife = string.find(promptString, "D", 1, true)
-		local indexOfKi = string.find(promptString, "E", indexOfLife, true)
-		if indexOfKi then
-			local indexOfPower = string.find(promptString, "T", indexOfKi, true)			
-			if indexOfPower then
-				return s .. "\n"
+		if indexOfLife then
+			local indexOfKi = string.find(promptString, "E", indexOfLife, true)
+			if indexOfKi then
+				local indexOfPower = string.find(promptString, "T", indexOfKi, true)			
+				if indexOfPower then
+					return s .. "\n"
+				end
 			end
 		end
 	end
