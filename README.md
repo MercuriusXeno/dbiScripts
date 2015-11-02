@@ -57,11 +57,11 @@ If you disagree with my params and can't compel me to change it, feel free to mo
 
 ####Reach me if you have questions or need help installing, or to offer suggestions and feature requests. You can also email me at x3n0ph0b3@yahoo.com or send me a DM on github [link is in the repo] or twitter [@x3n0ph0b3x].
 My characters on the MUD are:
-	* Mako
-	* Rhozo
-	* Garm
-	* Edolus
-	* Hagane
-	* Fosmos
-	* Frisk
-	* Grue
+    * Mako
+    * Rhozo
+    * Garm
+    * Edolus
+    * Hagane
+    * Fosmos
+    * Frisk
+    * Grue
