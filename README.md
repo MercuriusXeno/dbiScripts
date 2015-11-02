@@ -39,8 +39,7 @@ Install: Click your "DBI" world to make it active and go to File -> Plugins -> A
   * You're done! Enjoy the [hopefully] improved DBI experience!
 
 ##Features of the Aggregator:
-####Alerts
-######Alerts will appear when certain things occur.
+####Alerts will appear when certain things occur.
     * While meditating, if you max out, it will alert you to Focus Ki. (Sorry if you're kicapped!)
     * While focusing, and below 20% of your max Ki, it alerts you to Meditate.
     * Ki, Health, PL, Armor and DR %s all have a color gradient to indicate how "full" they are.
@@ -55,8 +54,9 @@ I won't go into detail, but there's a lot of redux output. Some of it you may li
 Feel free to make suggestions, but understand that this is generally tuned to my preferences.
 If you disagree with my params and can't compel me to change it, feel free to modify it to your preference!
 
-####Reach me if you have questions or need help installing, or to offer suggestions and feature requests. You can also email me at x3n0ph0b3@yahoo.com or send me a DM on github [link is in the repo] or twitter [@x3n0ph0b3x].
-My characters on the MUD are:
+##Contact Info
+######If you have questions or need help installing, or to offer suggestions and feature requests. You can also email me at x3n0ph0b3@yahoo.com or send me a DM on github [link is in the repo] or twitter [@x3n0ph0b3x].
+####My characters on the MUD are:
     * Mako
     * Rhozo
     * Garm
