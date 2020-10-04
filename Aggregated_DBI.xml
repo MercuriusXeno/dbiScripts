@@ -1770,6 +1770,7 @@ function onPromptScrape2 (name, line, wildcards, styles)
 	current_armor = tonumber(stripCommas(wildcards[4]), 10)
 	max_armor = tonumber(stripCommas(wildcards[5]), 10)	
 	biomass = tonumber(stripCommas(wildcards[6]), 10)
+	current_focus = tonumber(stripCommas(wildcards[5]), 10)
 	
 	local focus_string = "-"
 	
