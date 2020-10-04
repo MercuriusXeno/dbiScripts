@@ -1062,16 +1062,12 @@ script="debugPrompt"
 
 <script>
 <![CDATA[
-
 --causes max ki to show up instead of just percentages in prompt, defaults to false.
 local show_max_ki = false
-
 --causes end-of-fight summaries to show up after combat, defaults to false.
 local show_battle_synopsis = false
-
 --causes end of med/foc to show session averages, defaults to false
 local show_ki_synopsis = false
-
 local original_max_ki = 0.0
 local current_ki = 0.0
 local max_ki = 0.0
@@ -1102,11 +1098,9 @@ local pl_gain_string3 = ""
 local pl_gain_string4 = ""
 local is_low_on_focus = false
 local biomass = 0
-
 local percent_lookup_table = {10, 19, 28, 37, 46, 55, 64, 73, 82, 91, 100}
 local armor_percent_lookup_table = {80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100}
 local color_percent_lookup_table = {"red", "orangered", "darkorange", "orange", "gold", "yellow", "greenyellow", "lawngreen", "lightgreen", "palegreen", "cyan"}
-
 function color_from_percent(percent)
 	local percent_forced_numeric = tonumber(percent)
 	local lowest_value_index = 11
@@ -1117,7 +1111,6 @@ function color_from_percent(percent)
 	end	
 	return color_percent_lookup_table[lowest_value_index]
 end
-
 function armor_color_from_percent(percent)
 	local percent_forced_numeric = tonumber(percent)
 	local highest_value_index = 11
@@ -1128,15 +1121,11 @@ function armor_color_from_percent(percent)
 	end
 	return color_percent_lookup_table[highest_value_index]
 end
-
 --tells the script you've already gotten the meditate message from promptCheck, prevents it from firing more than once in a round
 local already_received_meditate_message = false
-
 local is_out_of_ki = false
 local is_at_max_ki = false
-
 local absolute_start_time = GetInfo(232)
-
 local health = 0
 local foe_health = 0
 local current_focus = 0
@@ -1147,11 +1136,9 @@ local max_pl = 0
 local zeni = 0
 local current_armor = 0
 local max_armor = 0
-
 local combat_round_pl_gained = 0
 local training_pl_gained = 0
 local total_training_pl_gained = 0
-
 local combat_pl = 0
 local attacks = 0
 local defends = 0
@@ -1164,13 +1151,11 @@ local enemy_soaks = 0
 local hits = 0
 local enemy_hits = 0
 local combats = 0
-
 local damage_dealt = 0
 local damage_received = 0
 	
 local total_damage_dealt = 0
 local total_damage_received = 0
-
 local total_attacks = 0
 local total_defends = 0
 local total_blocks = 0
@@ -1181,29 +1166,22 @@ local total_soaks = 0
 local total_enemy_soaks = 0
 local total_hits = 0
 local total_enemy_hits = 0
-
 local overkill_counter = 0
-
 local damage_dealt_since_last_round = 0
 local hits_since_last_round = 0
 local damage_received_since_last_round = 0
 local hits_received_since_last_round = 0
-
 local foe_name = ""
-
 local times_gravity = 0
 local training_stat = ""
 local training_flavor_text = ""
-
 local thoughtcraft_attempts = 0
 local thoughtcraft_successes = 0
-
 local windowName = "dbiAggregationWindow" .. GetPluginID()
 local promptWindow = windowName .. "Prompt"
 local currentWindow = windowName .. "Current"
 local combatWindow = windowName .. "Combat"
 local combatWindow2 = windowName .. "Combat2"
-
 local prompt_tick_flag = true
 	
 function resetMedFocValues()
@@ -1239,7 +1217,6 @@ function resetMedFocValues()
 	pl_gain_string3 = ""
 	pl_gain_string4 = ""
 end
-
 function resetPromptValues()
 	health = 0
 	foe_health = 0
@@ -1261,11 +1238,9 @@ function resetPromptValues()
 	thoughtcraft_attempts = 0
 	thoughtcraft_successes = 0
 end
-
 function OnPluginInstall ()
 	initializeWindows()
 end -- OnPluginInstall
-
 function onConnect(name, line, wildcards, styles)	
 	--responsible for resetting all the internal variables to their meaningful defaults
 	--this is to prevent DCs and reboots from affecting your performance aggregation totals.
@@ -1273,20 +1248,16 @@ function onConnect(name, line, wildcards, styles)
 	resetMedFocValues()
 		
 	resetPromptValues()
-
 	resetCombatValues()
 	
 	initializeWindows()
-
 	absolute_start_time = GetInfo(232)
 end
-
 function initializeWindows()
 	initializeWindow(currentWindow)
 	initializeWindow(promptWindow)
 	initializeWindow(combatWindow)
 	initializeWindow(combatWindow2)
-
 	-- find height of font for future calculations             
 	--font_height = WindowFontInfo (promptWindow, font_id, 1)  -- height
 		
@@ -1306,7 +1277,6 @@ function initializeWindows()
 	purgeCombatWindow()
 	purgeCombatWindow2()
 end
-
 function initializeWindow(windowNameString)
 	font_id = "fn"
 	bold_font_id = "fb"
@@ -1330,27 +1300,22 @@ function initializeWindow(windowNameString)
 		true, false, false, false,   -- bold
 		miniwin.font_charset_ansi, miniwin.font_family_any)
 end
-
 function purgeCurrentWindow()
 	WindowCreate(currentWindow, 0, 0, 50 + GetInfo(213) * 80, 64, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
 	WindowShow(currentWindow, true)
 end
-
 function purgePromptWindow()
 	WindowCreate(promptWindow, 0, 0, 50 + GetInfo(213) * 80, 48, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
 	WindowShow(promptWindow, true)
 end
-
 function purgeCombatWindow()
 	WindowCreate(combatWindow, 0, 0, 50 + GetInfo(213) * 80, 32, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
 	WindowShow(combatWindow, true)
 end
-
 function purgeCombatWindow2()
 	WindowCreate(combatWindow2, 0, 0, 50 + GetInfo(213) * 80, 16, miniwin.pos_bottom_left, 0, ColourNameToRGB("black"))
 	WindowShow(combatWindow2, true)
 end
-
 function onStartMeditate(name, line, wildcards, styles)	
 	if in_meditate == false then
 		--reset all counters
@@ -1411,7 +1376,6 @@ function onStopMeditate(name, line, wildcards, styles)
 		onReportGains(name, line, wildcards)
 	end
 end
-
 function onStartFocus(name, line, wildcards, styles)
 	if in_focus == false then	
 		--reset all counters
@@ -1423,7 +1387,6 @@ function onStartFocus(name, line, wildcards, styles)
 		in_focus = true
 	end
 end
-
 function onStopFocus(name, line, wildcards, styles)
 	if in_focus then
 		ColourTell("red", "black", "Focus stopped!")
@@ -1484,7 +1447,6 @@ function onStopFocus(name, line, wildcards, styles)
 		onReportGains(name, line, wildcards)
 	end
 end
-
 function onTickMeditate (name, line, wildcards, styles)	
 	--begin incrementing ticks and saving info
 	current_meditate_ticks = current_meditate_ticks + 1	
@@ -1496,7 +1458,6 @@ function onTickMeditate (name, line, wildcards, styles)
 	pl_gain_string1 = tostring(elapsed_meditate_time)
 	pl_gain_string2 = tostring(current_elapsed_meditate_time)
 end
-
 function onTickFocus (name, line, wildcards, styles)	
 	--begin incrementing ticks and saving info
 	current_focus_ticks = current_focus_ticks + 1	
@@ -1507,7 +1468,6 @@ function onTickFocus (name, line, wildcards, styles)
 	
 	ki_gain_string1 = tostring(elapsed_focus_time)
 	ki_gain_string2 = tostring(current_elapsed_focus_time)	
-
 	purgeCurrentWindow()
 	local leftTextPos = 4
 	local heightTextStart = 0
@@ -1572,14 +1532,12 @@ function onTickFocus (name, line, wildcards, styles)
 				leftTextPos, heightTextStart, 0, 0,  -- rectangle
 				ColourNameToRGB ("cyan"), 
 				false) -- not Unicode 
-
 	ki_gain_string1 = ""
 	ki_gain_string2 = ""
 	ki_gain_string3 = ""
 	ki_gain_string4 = ""
 	ki_gain_string5 = ""
 end
-
 --ki gained message fires BEFORE the tick message instead of afterwards so I want to concat them to look the same.
 function onGainedKi (name, line, wildcards, styles)
 	--remove commas
@@ -1599,7 +1557,6 @@ function onGainedKi (name, line, wildcards, styles)
 	ki_gain_string4 = shortenNumber(ki_max - original_max_ki)
 	ki_gain_string5 = shortenNumber(ki_max)
 end
-
 function onPromptCheck (name, line, wildcards, styles)
 	--handles comparing your prompt results to whatever is currently in session
 	
@@ -1637,7 +1594,6 @@ function onPromptCheck (name, line, wildcards, styles)
 		onStopMeditate (name, line, wildcards, styles)		
 	end
 end
-
 function onReportGains (name, line, wildcards)
 	local right_now = GetInfo(232)
 	local total_elapsed_time = right_now - absolute_start_time
@@ -1665,20 +1621,16 @@ function onReportGains (name, line, wildcards)
 			"yellow", "black", ")\n"
 		)
 end
-
 function round(num)
   return tonumber(string.format("%." .. (2 or 0) .. "f", num))
 end
-
 function roundTime(num) 
 	if num >= 0 then return math.floor(num+.5) 
 		else return math.ceil(num-.5) end
 end
-
 function truncate(num)
   return tonumber(string.format("%." .. (0) .. "f", num))
 end
-
 function shortenNumber(num)
 	local thousand_counter = 0
 	while num >= 1000 do
@@ -1702,7 +1654,6 @@ function shortenNumber(num)
 	
 	return tostring(round(num)) .. lookup_table[thousand_counter]
 end
-
 function expandNumber(num_str)	
 	num_str = stripCommas(num_str)
 	local lookup_table = {
@@ -1732,11 +1683,9 @@ function expandNumber(num_str)
 	
 	return num
 end
-
 function stripCommas(str)
 	return string.gsub(str,",","")
 end
-
 --handles setting vars and nothing else. The print is in prompt2
 function onPromptScrape (name, line, wildcards, styles)
 	health = wildcards[1]
@@ -1749,7 +1698,6 @@ function onPromptScrape (name, line, wildcards, styles)
 		end
 	end	
 end
-
 function onBattlePromptScrape (name, line, wildcards, styles)
 	health = wildcards[1]	
 	foe_health = tonumber(stripCommas(wildcards[2]), 10)
@@ -1762,7 +1710,6 @@ function onBattlePromptScrape (name, line, wildcards, styles)
 		end
 	end
 end
-
 function onPromptScrape2 (name, line, wildcards, styles)
 	base_pl = expandNumber(wildcards[1])
 	current_pl = tonumber(stripCommas(wildcards[2]), 10)
@@ -1770,14 +1717,15 @@ function onPromptScrape2 (name, line, wildcards, styles)
 	current_armor = tonumber(stripCommas(wildcards[4]), 10)
 	max_armor = tonumber(stripCommas(wildcards[5]), 10)	
 	biomass = tonumber(stripCommas(wildcards[6]), 10)
+	current_focus = tonumber(stripCommas(wildcards[5]), 10)
 	
 	local focus_string = "-"
 	
 	if max_focus > 0 then
 		focus_string = tostring(current_focus)
 	end
-	
-	local focus_color = color_from_percent(current_focus * 100.0 / max_focus)
+
+	local focus_color = color_from_percent(current_focus * 100.0 / max_focus)			
 	
 	local armor_string = "-"
 	local dr_color = "cyan"
@@ -1855,7 +1803,6 @@ function onPromptScrape2 (name, line, wildcards, styles)
 		is_low_on_focus = false
 	end
 end
-
 function drawTrainingPL()
 		leftTextPos = 4
 		heightTextStart = 0
@@ -1904,7 +1851,6 @@ function drawTrainingPL()
 					ColourNameToRGB ("green"), 
 					false) -- not Unicode 					
 end
-
 function onGainedPL (name, line, wildcards, styles)
 	--remove commas
 	local pl_gained = tonumber(stripCommas(wildcards[2]), 10)
@@ -1981,7 +1927,6 @@ function onGainedPL (name, line, wildcards, styles)
 		combat_round_pl_gained = combat_round_pl_gained + pl_gained		
 	end
 end
-
 function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki_string, focus_color, focus_string, pl_color, pl_string, zeni_string, armor_color, armor_string, dr_string)
 	purgePromptWindow()
 	local leftTextPos = 4
@@ -2087,10 +2032,7 @@ function drawPlayerPrompt(health_string, foe_string, ki_color, ki_string, max_ki
 					ColourNameToRGB ("red"), 
 					false) -- not Unicode
 	end
-
 end
-
-
 function onPromptShowRoundInfo(name, line, wildcards, styles)	
 	purgeCurrentWindow()
 	local leftTextPos = 4
@@ -2162,7 +2104,6 @@ function onPromptShowRoundInfo(name, line, wildcards, styles)
 	hits_received_since_last_round = 0
 	damage_received_since_last_round = 0
 end
-
 function drawPlayerThoughtcraft (successes_string, attempts_string, success_percent_string, is_success_string)
 	purgeCurrentWindow()
 	local leftTextPos = 4
@@ -2212,21 +2153,16 @@ function drawPlayerThoughtcraft (successes_string, attempts_string, success_perc
 				ColourNameToRGB ("white"), 
 				false) -- not Unicode
 end
-
-
 function onThoughtcraftSucceed (name, line, wildcards, styles)
 	thoughtcraft_attempts = thoughtcraft_attempts + 1
 	thoughtcraft_successes = thoughtcraft_successes + 1
 	drawPlayerThoughtcraft(tostring(thoughtcraft_successes), tostring(thoughtcraft_attempts), tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)), "succeeded!")	
 end
-
 function onThoughtcraftFail (name, line, wildcards, styles)
 	thoughtcraft_attempts = thoughtcraft_attempts + 1
 	drawPlayerThoughtcraft(tostring(thoughtcraft_successes), tostring(thoughtcraft_attempts), tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)), "failed!")
 end
-
 function onGetZeni (name, line, wildcards, styles)
-
 	require "wait"
 	wait.make (function ()
 		wait.time(0.2)
@@ -2239,7 +2175,6 @@ function onGetZeni (name, line, wildcards, styles)
 			"white", "black", " zeni!\n")
 	end)
 end
-
 function printFocusKi()
 	ColourTell(
 		"red", "black",		" _______ _______ _______ __   __ _______   ___   _ ___  \n",
@@ -2250,7 +2185,6 @@ function printFocusKi()
 		"red", "black",		"|   |   |       |     |_|       |_____| | |    _  |   | \n",
 		"red", "black",		"|___|   |_______|_______|_______|_______| |___| |_|___| \n")
 end
-
 function printMeditate()
 	ColourTell(
 		"red", "black",		" __   __ _______ ______  ___ _______ _______ _______ _______ \n",
@@ -2262,7 +2196,6 @@ function printMeditate()
 		"red", "black",		"|_|   |_|_______|______||___| |___| |__| |__| |___| |_______|\n"
 		)	
 end
-
 function printStand()
 	ColourTell(
 		"red", "black",		" _______ _______ _______ __    _ ______    __   __ _______ \n",
@@ -2273,7 +2206,6 @@ function printStand()
 		"red", "black",		" _____| | |   | |   _   | | |   |       | |       |   |    \n",
 		"red", "black",		"|_______| |___| |__| |__|_|  |__|______|  |_______|___|    \n")		
 end
-
 function onNeedFocus()
 	is_low_on_focus = true
 end
@@ -2307,21 +2239,16 @@ function resetCombatValues()
 	overkill_counter = 0
 	foe_name = ""
 end
-
 function onKilled (name, line, wildcards, styles)
-
 	require "wait"
 	wait.make (function ()
 			ColourTell("red", "black", "You died! Damage received, last round: " .. damage_received_since_last_round)
 			wait.time (1)
 			onEndCombat(name, line, wildcards, styles)
 	end)
-
 end
-
 function onEndCombat(name, line, wildcards, styles)	
 	foe_health = 0
-
 	require "wait"
 	wait.make (function ()
 		if show_battle_synopsis then
@@ -2398,7 +2325,6 @@ function onEndCombat(name, line, wildcards, styles)
 		combats = combats + 1
 	end)
 end
-
 function nilZero(obj)
 	if obj ~= nil then
 		return obj
@@ -2406,8 +2332,6 @@ function nilZero(obj)
 		return 0
 	end
 end
-
-
 function onBlock (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2415,7 +2339,6 @@ function onBlock (name, line, wildcards, styles)
 	defends = defends + 1
 	blocks = blocks + 1
 end
-
 function onSoak (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2423,7 +2346,6 @@ function onSoak (name, line, wildcards, styles)
 	defends = defends + 1
 	soaks = soaks + 1
 end
-
 function onEnemySoak (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2431,7 +2353,6 @@ function onEnemySoak (name, line, wildcards, styles)
 	enemy_soaks = enemy_soaks + 1
 	attacks = attacks + 1
 end
-
 function onDodge (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2439,7 +2360,6 @@ function onDodge (name, line, wildcards, styles)
 	defends = defends + 1
 	dodges = dodges + 1
 end
-
 function onEnemyMiss (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2447,7 +2367,6 @@ function onEnemyMiss (name, line, wildcards, styles)
 	defends = defends + 1
 	enemy_misses = enemy_misses + 1
 end
-
 function onMiss (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2455,7 +2374,6 @@ function onMiss (name, line, wildcards, styles)
 	misses = misses + 1
 	attacks = attacks + 1
 end
-
 function onTakeDamage (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2469,7 +2387,6 @@ function onTakeDamage (name, line, wildcards, styles)
 	hits_received_since_last_round = hits_received_since_last_round + 1
 	damage_received_since_last_round = damage_received_since_last_round + dam_num
 end
-
 function onDealDamage (name, line, wildcards, styles)
 	if wildcards.foename and foe_name == "" then
 		foe_name = wildcards.foename
@@ -2488,7 +2405,6 @@ function onDealDamage (name, line, wildcards, styles)
 	hits_since_last_round = hits_since_last_round + 1
 	damage_dealt_since_last_round = damage_dealt_since_last_round + dam_num
 end
-
 function onGainCombatPL(name, line, wildcards, styles)	
 	onPromptShowRoundInfo(name, line, wildcards, styles)
 	require "wait"	
@@ -2505,7 +2421,6 @@ function onGainCombatPL(name, line, wildcards, styles)
 			"green", "black", "\n")
 	end)
 end
-
 function onAreaReset (name, line, wildcards, styles)
 	require "wait"	
 	wait.make (function ()
@@ -2513,7 +2428,6 @@ function onAreaReset (name, line, wildcards, styles)
 		printReset()
 	end)
 end
-
 function stringIfValue(str, num)
 	if num > 0 then
 		return str
@@ -2521,17 +2435,14 @@ function stringIfValue(str, num)
 		return ""
 	end
 end
-
 function setPrompt (name, line, wildcards)
 	local str = "prompt &WH[&R%h&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%p&W] $[&G$%g&W] A[&G%z&W/&g%Z&W] B[&R%Q&W]%Y&D"
 	Send(str)
 end
-
 function setBattlePrompt (name, line, wildcards)
 	local str = "fprompt &WH[&R%h&W] V[&r%y&W] K[&C%m&W/&c%M&W] F[&C%f&W]%Y&WP[&w%x&W|&z%p&W] $[&G$%g&W] A[&G%z&W/&g%Z&W] B[&R%Q&W]%Y&D"
 	Send(str)
 end
-
 function onStartTraining (name, line, wildcards, styles)
 	if wildcards.trainingStat then
 		training_stat = wildcards.trainingStat
@@ -2540,7 +2451,6 @@ function onStartTraining (name, line, wildcards, styles)
 	total_training_pl_gained = 0
 	training_pl_gained = 0
 end
-
 function onStopTraining (name, line, wildcards, styles)	
 	purgeCombatWindow()
 	purgeCombatWindow2()
@@ -2560,11 +2470,9 @@ function onStopTraining (name, line, wildcards, styles)
 	training_stat = ""
 	training_flavor_text = ""
 end
-
 function onLootDrop (name, line, wildcards, styles)
 	printWoot()
 end
-
 function printWoot()
 ColourTell(
 	"red", "black", " _     _ _______ _______ _______ \n",
@@ -2575,11 +2483,9 @@ ColourTell(
 	"red", "black", "|   _   |       |       | |   |  \n",
 	"red", "black", "|__| |__|_______|_______| |___|  \n")
 end
-
 function onEarnedTrains (name, line, wildcards, styles)
 	printTrains()
 end
-
 function printTrains()
 ColourTell(
 	"red", "black", " _______ ______   _______ ___ __    _ _______ \n",
@@ -2590,7 +2496,6 @@ ColourTell(
 	"red", "black", "  |   | |   |  | |   _   |   | | |   |_____| |\n",
 	"red", "black", "  |___| |___|  |_|__| |__|___|_|  |__|_______|\n")
 end
-
 function printReset()
 ColourTell(
 	"red", "black", " ______   _______ _______ _______ _______ \n",
@@ -2601,7 +2506,6 @@ ColourTell(
 	"red", "black", "|   |  | |   |___ _____| |   |___  |   |  \n",
 	"red", "black", "|___|  |_|_______|_______|_______| |___|  \n")
 end
-
 function printOmNom()
 ColourTell(
 	"red", "black", " _______ __   __ __    _ _______ __   __ \n",
@@ -2612,7 +2516,6 @@ ColourTell(
 	"red", "black", "|       | ||_|| | | |   |       | ||_|| |\n",
 	"red", "black", "|_______|_|   |_|_|  |__|_______|_|   |_|\n")
 end
-
 function printSuppress()
 ColourTell(
 	"red", "black", " _______ __   __ _______ _______ ______   _______ _______ _______ \n",
@@ -2623,13 +2526,11 @@ ColourTell(
 	"red", "black", " _____| |       |   |   |   |   |   |  | |   |___ _____| |_____| |\n",
 	"red", "black", "|_______|_______|___|   |___|   |___|  |_|_______|_______|_______|\n")
 end
-
 function onThoughtcraftStart (name, line, wildcards, styles)
 	purgeCurrentWindow()
 	thoughtcraft_attempts = 0	
 	thoughtcraft_successes = 0
 end
-
 function onThoughtcraftStop (name, line, wildcards, styles)
 	purgeCurrentWindow()
 	ColourTell("blue", "black", "You stop creating shards. Successes: ",
@@ -2640,24 +2541,20 @@ function onThoughtcraftStop (name, line, wildcards, styles)
 		"cyan", "black", tostring(round((thoughtcraft_successes * 100) / thoughtcraft_attempts)),
 		"blue", "black", "%)")
 end
-
 function onTrainingFlavorText (name, line, wildcards, styles)	
 	training_flavor_text = wildcards[0]
 end
-
 function onBioSkillAbsorb (name, line, wildcards, styles)
 ColourTell("palegreen", "black", "You absorb ",
 	"cyan", "black", wildcards.skillName,
 	"palegreen", "black", "!\n")
 	printOmNom()
 end
-
 function onEnter5bWarning (name, line, wildcards, styles)
 	if current_pl ~= nil and current_pl > 5000000000 then
 		printSuppress()
 	end
 end
-
 function cleanPacket (packetString)
 	local culledString = string.gsub(packetString, "%[0;37m", "")
 	culledString = string.gsub(culledString, "%[0;36m", "")
@@ -2670,7 +2567,6 @@ function cleanPacket (packetString)
 	culledString = string.gsub(culledString, "\n", "") -- scrape newlines...
 	return culledString
 end
-
 function OnPluginPacketReceived (s) 
 	--my strategy for simplifying the regex here is 
 	--to cull the codes from the packet! It's unreadable!
@@ -2708,7 +2604,6 @@ function OnPluginPacketReceived (s)
 	
 	return s
 end -- function OnPluginPacketReceived
-
 function debugPrompt ()
 end
 ]]>
