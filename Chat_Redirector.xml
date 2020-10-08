@@ -217,6 +217,25 @@ Change the variable "chat_world" to be the name of the world chats are to go to.
   >
   </trigger>
   
+  <trigger
+   enabled="y"
+   match="^(.*)\[(.*)RolePlay(.*)\] (?P<playerName>.*): '(?P<chatMessage>.*)'$"
+   omit_from_output="y"
+   regexp="y"
+   script="redirect"
+   sequence="100"
+  >
+  </trigger>
+
+  <trigger
+   enabled="y"
+   match="^(.*)\[(.*)RolePlay(.*)\] (?P<playerName>.*) '(?P<chatMessage>.*)'$"
+   omit_from_output="y"
+   regexp="y"
+   script="redirect"
+   sequence="100"
+  >
+  </trigger>
   
 </triggers>
 

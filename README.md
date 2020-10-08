@@ -55,8 +55,10 @@ Feel free to make suggestions, but understand that this is generally tuned to my
 If you disagree with my params and can't compel me to change it, feel free to modify it to your preference!
 
 ##Contact Info
-######If you have questions or need help installing, or to offer suggestions and feature requests. You can also email me at x3n0ph0b3@yahoo.com or send me a DM on github [link is in the repo] or twitter [@x3n0ph0b3x].
-####My characters on the MUD are:
+######These scripts were originally created by  MercuriusXeno on GitHub. I have left their contact info below intact, however I do not know if they are still active.
+######If you need assistance or encounter a bug with this, please contact me on DragonBall: Infinity. I am Keuri there. I am not officially taking over maintenance of this plugin, but I'll help when I can.
+######Original: If you have questions or need help installing, or to offer suggestions and feature requests. You can also email me at x3n0ph0b3@yahoo.com or send me a DM on github [link is in the repo] or twitter [@x3n0ph0b3x].
+####Original: My characters on the MUD are:
     * Mako
     * Rhozo
     * Garm
